@@ -9,6 +9,7 @@ const { addMessage } = require('./utils/chat');
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
+const path = require('path');
 
 // Connect to database
 connectDB();
@@ -16,8 +17,6 @@ connectDB();
 // Init Middleware
 app.use(express.json({ extended: false }));
 app.use(fileUpload());
-
-app.get('/', (req, res) => res.send('API Running'));
 
 // Define Routes
 app.use('/api/users', require('./routes/api/users'));
@@ -35,8 +34,18 @@ app.use('/api/ecommerce/stores', require('./routes/api/ecommerce/stores'));
 app.use('/api/freelance/services', require('./routes/api/freelance/services'));
 app.use('/api/chat/conversations', require('./routes/api/chat/conversations'));
 
+// Serve static assets in production
+if (process.env.NODE_ENV === 'production') {
+  // Set static folder
+  app.use(express.static('client/build'));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+  });
+}
+
 // Setup SocketIO to send and receive messages in real time in chat module
-io.on('connection', socket => {
+io.on('connection', (socket) => {
   // This is called whenever a user joins the chat
   socket.on('joinRoom', ({ user, room }) => {
     // Add user to the room

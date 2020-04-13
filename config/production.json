@@ -1,0 +1,4 @@
+{
+  "mongoURI": "mongodb+srv://johndoe:johndoe@techzcruit-7hoak.mongodb.net/test?retryWrites=true&w=majority",
+  "jwtSecret": "T8jBGxyeBCTm21ixS3Jx"
+}

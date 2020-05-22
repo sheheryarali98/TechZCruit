@@ -58,9 +58,9 @@ const server = app.listen(PORT, () =>
 
 const io = socketIO(server);
 
-io.on('connection', function(socket) {
+io.on('connection', function (socket) {
   socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function(data) {
+  socket.on('my other event', function (data) {
     console.log(data + ' connection data');
   });
 });
@@ -72,7 +72,7 @@ const addUser = ({ id, name, room }) => {
   room = room.trim().toLowerCase();
 
   const existingUser = users.find(
-    user => user.room === room && user.name === name
+    (user) => user.room === room && user.name === name
   );
 
   if (!name || !room) return { error: 'Username and room are required.' };
@@ -85,21 +85,21 @@ const addUser = ({ id, name, room }) => {
 
   return { user };
 };
-const getUsersInRoom = room => users.filter(user => user.room === room);
+const getUsersInRoom = (room) => users.filter((user) => user.room === room);
 
-const removeUser = id => {
-  const index = users.findIndex(user => user.id === id);
+const removeUser = (id) => {
+  const index = users.findIndex((user) => user.id === id);
 
   if (index !== -1) {
     return users.splice(index, 1)[0];
   }
 };
-const getUser = id => {
-  users.find(user => user.id === id);
+const getUser = (id) => {
+  users.find((user) => user.id === id);
   console.log('id succese called');
 };
 // socket io connection
-io.on('connection', socket => {
+io.on('connection', (socket) => {
   console.log('user connected');
   socket.on('join', ({ name, room }, callback) => {
     const { error, user } = addUser({ id: socket.id, name, room });
@@ -109,16 +109,16 @@ io.on('connection', socket => {
 
     if (error) return callback(error);
     console.log('user has join');
-    users.map(item => {
+    users.map((item) => {
       console.log('join run', item.name, item.room, item);
       io.to(item.room).emit('roomData', {
         room: item.room,
-        user: getUsersInRoom(item.room)
+        user: getUsersInRoom(item.room),
       });
 
       socket.emit('message', {
         user: 'admin',
-        text: `${item.name}, welcome to the room ${item.room}`
+        text: `${item.name}, welcome to the room ${item.room}`,
       });
       console.log('admin welcome,', item);
       // const { user, name } = users;
@@ -143,7 +143,7 @@ io.on('connection', socket => {
     io.to(user.room).emit('message', { user: user.name, text: message });
     io.to(user.room).emit('roomData', {
       room: user.room,
-      users: getUsersInRoom(user.room)
+      users: getUsersInRoom(user.room),
     });
 
     callback();
@@ -156,11 +156,11 @@ io.on('connection', socket => {
     if (user) {
       io.to(user.room).emit('message', {
         user: 'Admin',
-        text: `${user.name} has left.`
+        text: `${user.name} has left.`,
       });
       io.to(user.room).emit('roomData', {
         room: user.room,
-        users: getUsersInRoom(user.room)
+        users: getUsersInRoom(user.room),
       });
     }
   });

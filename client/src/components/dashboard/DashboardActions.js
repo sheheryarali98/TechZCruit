@@ -30,7 +30,7 @@ const DashboardActions = ({ styles }) => {
 };
 
 DashboardActions.propTypes = {
-  styles: PropTypes.object.isRequired
+  styles: PropTypes.object.isRequired,
 };
 
 export default DashboardActions;

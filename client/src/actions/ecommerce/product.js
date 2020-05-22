@@ -1,50 +1,19 @@
+import axios from 'axios';
 import {
-  PRODUCT_CREATED,
-  PRODUCT_LOADED,
-  PRODUCT_ERROR,
-  PRODUCT_REMOVED,
-  REVIEW_ADDED,
-  PRODUCT_UPDATED,
+  All_PRODUCTS_LOADED,
   All_PRODUCTS_LOADED_FOR_STORE,
-  REVIEW_REMOVED,
+  PRODUCT_LOADED,
+  PRODUCT_CREATED,
+  PRODUCT_UPDATED,
   PRODUCT_LIKED,
   PRODUCT_UNLIKED,
   PRODUCT_PURCHASED,
-  All_PRODUCTS_LOADED
+  REVIEW_ADDED_PRODUCT,
+  REVIEW_REMOVED_PRODUCT,
+  PRODUCT_REMOVED,
+  PRODUCT_ERROR
 } from '../types';
 import { setAlert } from '../alert';
-import axios from 'axios';
-
-// Create a product
-export const createProduct = (storeId, formData, history) => async dispatch => {
-  const config = {
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  };
-
-  try {
-    const res = await axios.post(
-      `/api/ecommerce/products/${storeId}`,
-      formData,
-      config
-    );
-
-    dispatch({
-      type: PRODUCT_CREATED,
-      payload: res.data
-    });
-
-    dispatch(setAlert('Product created', 'success'));
-
-    history.push(`/ecommerce/store/products/${storeId}`);
-  } catch (err) {
-    const errors = err.response.data.errors;
-    if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
-    }
-  }
-};
 
 //  Get Product by id
 export const getProductById = id => async dispatch => {
@@ -55,59 +24,6 @@ export const getProductById = id => async dispatch => {
       type: PRODUCT_LOADED,
       payload: res.data
     });
-  } catch (err) {
-    dispatch({
-      type: PRODUCT_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
-    });
-  }
-};
-
-// Add a review to a product
-export const reviewOnProduct = (productId, formData) => async dispatch => {
-  const config = {
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  };
-
-  try {
-    const res = await axios.put(
-      `/api/ecommerce/products/review/${productId}`,
-      formData,
-      config
-    );
-
-    dispatch({
-      type: REVIEW_ADDED,
-      payload: res.data
-    });
-
-    dispatch(setAlert('Review added', 'success'));
-  } catch (err) {
-    const errors = err.response.data.errors;
-    if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
-    }
-  }
-};
-
-// Delete a review on a product
-export const deleteReviewOnProduct = (
-  productId,
-  reviewId
-) => async dispatch => {
-  try {
-    const res = await axios.delete(
-      `/api/ecommerce/products/review/${productId}/${reviewId}`
-    );
-
-    dispatch({
-      type: REVIEW_REMOVED,
-      payload: res.data
-    });
-
-    dispatch(setAlert('Review removed', 'success'));
   } catch (err) {
     dispatch({
       type: PRODUCT_ERROR,
@@ -150,6 +66,56 @@ export const getAllProductsForStore = storeId => async dispatch => {
   }
 };
 
+// Search for a product
+export const searchProduct = description => async dispatch => {
+  try {
+    const res = await axios.get(
+      `/api/ecommerce/products/search/${description}`
+    );
+
+    dispatch({
+      type: All_PRODUCTS_LOADED,
+      payload: res.data
+    });
+  } catch (err) {
+    dispatch({
+      type: PRODUCT_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status }
+    });
+  }
+};
+
+// Create a product
+export const createProduct = (storeId, formData, history) => async dispatch => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+
+  try {
+    const res = await axios.post(
+      `/api/ecommerce/products/${storeId}`,
+      formData,
+      config
+    );
+
+    dispatch({
+      type: PRODUCT_CREATED,
+      payload: res.data
+    });
+
+    dispatch(setAlert('Product created', 'success'));
+
+    history.push(`/ecommerce/store/products/${storeId}`);
+  } catch (err) {
+    const errors = err.response.data.errors;
+    if (errors) {
+      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+    }
+  }
+};
+
 // Purchase a product
 export const purchaseProduct = (productId, amount) => async dispatch => {
   const config = {
@@ -175,25 +141,6 @@ export const purchaseProduct = (productId, amount) => async dispatch => {
     dispatch(setAlert('Product purchased', 'success'));
 
     return res.data.clientSecret;
-  } catch (err) {
-    dispatch({
-      type: PRODUCT_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
-    });
-  }
-};
-
-// Delete a product
-export const deleteProduct = productId => async dispatch => {
-  try {
-    await axios.delete(`/api/ecommerce/products/${productId}`);
-
-    dispatch({
-      type: PRODUCT_REMOVED,
-      payload: productId
-    });
-
-    dispatch(setAlert('Product Removed', 'success'));
   } catch (err) {
     dispatch({
       type: PRODUCT_ERROR,
@@ -272,17 +219,70 @@ export const updateProduct = (
   }
 };
 
-// Search for a product
-export const searchProduct = description => async dispatch => {
+// Add a review to a product
+export const reviewOnProduct = (productId, formData) => async dispatch => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+
   try {
-    const res = await axios.get(
-      `/api/ecommerce/products/search/${description}`
+    const res = await axios.put(
+      `/api/ecommerce/products/review/${productId}`,
+      formData,
+      config
     );
 
     dispatch({
-      type: All_PRODUCTS_LOADED,
+      type: REVIEW_ADDED_PRODUCT,
       payload: res.data
     });
+
+    dispatch(setAlert('Review added', 'success'));
+  } catch (err) {
+    const errors = err.response.data.errors;
+    if (errors) {
+      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+    }
+  }
+};
+
+// Delete a review on a product
+export const deleteReviewOnProduct = (
+  productId,
+  reviewId
+) => async dispatch => {
+  try {
+    const res = await axios.delete(
+      `/api/ecommerce/products/review/${productId}/${reviewId}`
+    );
+
+    dispatch({
+      type: REVIEW_REMOVED_PRODUCT,
+      payload: res.data
+    });
+
+    dispatch(setAlert('Review removed', 'success'));
+  } catch (err) {
+    dispatch({
+      type: PRODUCT_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status }
+    });
+  }
+};
+
+// Delete a product
+export const deleteProduct = productId => async dispatch => {
+  try {
+    await axios.delete(`/api/ecommerce/products/${productId}`);
+
+    dispatch({
+      type: PRODUCT_REMOVED,
+      payload: productId
+    });
+
+    dispatch(setAlert('Product Removed', 'success'));
   } catch (err) {
     dispatch({
       type: PRODUCT_ERROR,

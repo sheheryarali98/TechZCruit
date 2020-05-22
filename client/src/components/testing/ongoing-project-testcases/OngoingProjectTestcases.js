@@ -5,12 +5,14 @@ import { connect } from 'react-redux';
 import {
   getProjectById,
   passTestcaseForProject,
-  failTestcaseForProject
+  failTestcaseForProject,
 } from '../../../actions/testing/project';
 import styles from '../../../css/testing/ongoing-projects-testcases/style.module.css';
 import SideNav from '../../layout/SideNav';
 import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
+import { toggleSideNav } from '../../../actions/auth';
+import windowSize from 'react-window-size';
 
 const OngoingProjectTestcases = ({
   project: { loading, project },
@@ -18,15 +20,20 @@ const OngoingProjectTestcases = ({
   getProjectById,
   match,
   passTestcaseForProject,
-  failTestcaseForProject
+  failTestcaseForProject,
+  toggleSideNav,
+  windowWidth,
 }) => {
   useEffect(() => {
     getProjectById(match.params.id);
-  }, [getProjectById, match.params.id]);
 
-  const getUserIndex = testcase => {
+    toggleSideNav(windowWidth >= 576);
+    // eslint-disable-next-line
+  }, [getProjectById, match.params.id, toggleSideNav]);
+
+  const getUserIndex = (testcase) => {
     return testcase.actualResults
-      .map(result => result.user)
+      .map((result) => result.user)
       .indexOf(auth.user !== null ? auth.user._id : '');
   };
 
@@ -35,7 +42,11 @@ const OngoingProjectTestcases = ({
       <section className={styles.section}>
         <SideNav styles={styles} />
 
-        <div className={styles.content}>
+        <div
+          className={`${styles.content} ${
+            !auth.displaySideNav ? styles.side_nav_hidden : ''
+          }`}
+        >
           <Alert />
           <div className={styles.heading}>
             <i className='fas fa-user'></i> Ongoing project test cases
@@ -44,7 +55,7 @@ const OngoingProjectTestcases = ({
             Below is a list of all the test cases of the current project
           </div>
           {!loading && project !== null ? (
-            <Table striped hover>
+            <Table striped hover responsive>
               <thead>
                 <tr>
                   <th>Name</th>
@@ -55,7 +66,7 @@ const OngoingProjectTestcases = ({
                 </tr>
               </thead>
               <tbody>
-                {project.testCases.map(testcase => (
+                {project.testCases.map((testcase) => (
                   <tr>
                     <td>{testcase.name}</td>
                     <td>{testcase.description}</td>
@@ -107,16 +118,19 @@ OngoingProjectTestcases.propTypes = {
   getProjectById: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
   passTestcaseForProject: PropTypes.func.isRequired,
-  failTestcaseForProject: PropTypes.func.isRequired
+  failTestcaseForProject: PropTypes.func.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
+  windowWidth: PropTypes.number.isRequired,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   project: state.project,
-  auth: state.auth
+  auth: state.auth,
 });
 
 export default connect(mapStateToProps, {
   getProjectById,
   passTestcaseForProject,
-  failTestcaseForProject
-})(OngoingProjectTestcases);
+  failTestcaseForProject,
+  toggleSideNav,
+})(windowSize(OngoingProjectTestcases));

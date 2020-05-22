@@ -2,12 +2,12 @@ import {
   PRODUCT_CREATED,
   PRODUCT_PURCHASED,
   PRODUCT_LOADED,
-  REVIEW_ADDED,
+  REVIEW_ADDED_PRODUCT,
   PRODUCT_UPDATED,
   PRODUCT_REMOVED,
   PRODUCT_ERROR,
   All_PRODUCTS_LOADED_FOR_STORE,
-  REVIEW_REMOVED,
+  REVIEW_REMOVED_PRODUCT,
   PRODUCT_LIKED,
   PRODUCT_UNLIKED,
   All_PRODUCTS_LOADED
@@ -47,8 +47,8 @@ export default function(state = initialState, action) {
         loading: false,
         errors: null
       };
-    case REVIEW_ADDED:
-    case REVIEW_REMOVED:
+    case REVIEW_ADDED_PRODUCT:
+    case REVIEW_REMOVED_PRODUCT:
       return {
         ...state,
         loading: false,

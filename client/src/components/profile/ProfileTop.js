@@ -9,9 +9,9 @@ const ProfileTop = ({
     company,
     location,
     website,
-    socialLinks
+    socialLinks,
   },
-  styles
+  styles,
 }) => {
   return (
     <Fragment>
@@ -91,7 +91,7 @@ const ProfileTop = ({
 
 ProfileTop.propTypes = {
   profile: PropTypes.object.isRequired,
-  styles: PropTypes.object.isRequired
+  styles: PropTypes.object.isRequired,
 };
 
 export default ProfileTop;

@@ -6,14 +6,14 @@ import { Row, Col } from 'react-bootstrap';
 const ProjectTesters = ({ testers, styles }) => {
   return (
     <Fragment>
-      {testers.map(tester => (
+      {testers.map((tester) => (
         <Row className={styles.list_item}>
-          <Col md={2}>
+          <Col xs={12} md={3}>
             <Link to={`/profile/${tester.user._id}`}>
               <img src={tester.user.avatar} alt='' className='round-img' />
             </Link>
           </Col>
-          <Col md={10}>
+          <Col xs={12} md={9}>
             <h2>{tester.user.name}</h2>
             <div>
               <strong>Testing status: </strong>
@@ -28,7 +28,7 @@ const ProjectTesters = ({ testers, styles }) => {
 
 ProjectTesters.propTypes = {
   testers: PropTypes.array.isRequired,
-  styles: PropTypes.object.isRequired
+  styles: PropTypes.object.isRequired,
 };
 
 export default ProjectTesters;

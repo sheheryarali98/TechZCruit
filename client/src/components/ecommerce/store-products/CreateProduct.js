@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { Form, Button } from 'react-bootstrap';
@@ -8,22 +8,35 @@ import styles from '../../../css/ecommerce/store-products/style.module.css';
 import SideNav from '../../layout/SideNav';
 import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
+import { toggleSideNav } from '../../../actions/auth';
+import windowSize from 'react-window-size';
 
-const CreateProduct = ({ history, createProduct, match }) => {
+const CreateProduct = ({
+  history,
+  createProduct,
+  match,
+  toggleSideNav,
+  windowWidth,
+  auth: { displaySideNav },
+}) => {
+  useEffect(() => {
+    toggleSideNav(windowWidth >= 576);
+    // eslint-disable-next-line
+  }, [toggleSideNav]);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     category: '',
-    price: ''
+    price: '',
   });
 
   const { title, description, category, price } = formData;
 
-  const onChange = e => {
+  const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const onSubmit = e => {
+  const onSubmit = (e) => {
     e.preventDefault();
     createProduct(match.params.id, formData, history);
   };
@@ -33,7 +46,11 @@ const CreateProduct = ({ history, createProduct, match }) => {
       <section className={styles.section}>
         <SideNav styles={styles} />
 
-        <div className={styles.content}>
+        <div
+          className={`${styles.content} ${
+            !displaySideNav ? styles.side_nav_hidden : ''
+          }`}
+        >
           <Alert />
           <div className={styles.heading}>
             <i className='fas fa-user'></i> Create product
@@ -42,14 +59,14 @@ const CreateProduct = ({ history, createProduct, match }) => {
             Fill in the following information to create a new product for the
             store
           </div>
-          <Form onSubmit={e => onSubmit(e)}>
+          <Form onSubmit={(e) => onSubmit(e)}>
             <Form.Group>
               <Form.Control
                 type='text'
                 name='title'
                 value={title}
                 placeholder='Title'
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
             <Form.Group>
@@ -59,7 +76,7 @@ const CreateProduct = ({ history, createProduct, match }) => {
                 name='description'
                 value={description}
                 placeholder='Description'
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
             <Form.Group>
@@ -67,7 +84,7 @@ const CreateProduct = ({ history, createProduct, match }) => {
                 as='select'
                 name='category'
                 value={category}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               >
                 <option value=''>Please select product category</option>
                 <option value='1'>Web</option>
@@ -87,7 +104,7 @@ const CreateProduct = ({ history, createProduct, match }) => {
                 name='price'
                 value={price}
                 placeholder='Price in US dollars'
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
             <Button
@@ -116,9 +133,17 @@ const CreateProduct = ({ history, createProduct, match }) => {
 };
 
 CreateProduct.propTypes = {
-  createProduct: PropTypes.func.isRequired
+  createProduct: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
+  windowWidth: PropTypes.number.isRequired,
 };
 
-export default connect(null, {
-  createProduct
-})(withRouter(CreateProduct));
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+});
+
+export default connect(mapStateToProps, {
+  createProduct,
+  toggleSideNav,
+})(withRouter(windowSize(CreateProduct)));

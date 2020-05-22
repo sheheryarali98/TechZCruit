@@ -4,24 +4,32 @@ import { Button, Table } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import {
   getAllProductsForStore,
-  deleteProduct
+  deleteProduct,
 } from '../../../actions/ecommerce/product';
 import styles from '../../../css/ecommerce/store-products/style.module.css';
 import SideNav from '../../layout/SideNav';
 import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
+import { toggleSideNav } from '../../../actions/auth';
+import windowSize from 'react-window-size';
 
 const StoreProducts = ({
   product: { loading, products },
   getAllProductsForStore,
   match,
-  deleteProduct
+  deleteProduct,
+  toggleSideNav,
+  windowWidth,
+  auth: { displaySideNav },
 }) => {
   useEffect(() => {
     getAllProductsForStore(match.params.id);
-  }, [getAllProductsForStore, match.params.id]);
 
-  const getCategory = category => {
+    toggleSideNav(windowWidth >= 576);
+    // eslint-disable-next-line
+  }, [getAllProductsForStore, match.params.id, toggleSideNav]);
+
+  const getCategory = (category) => {
     switch (category) {
       case 1:
         return 'Web';
@@ -49,7 +57,11 @@ const StoreProducts = ({
       <section className={styles.section}>
         <SideNav styles={styles} />
 
-        <div className={styles.content}>
+        <div
+          className={`${styles.content} ${
+            !displaySideNav ? styles.side_nav_hidden : ''
+          }`}
+        >
           <Alert />
           <div className={styles.heading}>
             <i className='fas fa-user'></i> Store products
@@ -66,7 +78,7 @@ const StoreProducts = ({
           </Button>
 
           {!loading && products.length > 0 ? (
-            <Table striped hover>
+            <Table striped hover responsive>
               <thead>
                 <tr>
                   <th>Title</th>
@@ -78,7 +90,7 @@ const StoreProducts = ({
                 </tr>
               </thead>
               <tbody>
-                {products.map(product => (
+                {products.map((product) => (
                   <tr>
                     <td>{product.title}</td>
                     <td>{product.description}</td>
@@ -119,14 +131,19 @@ const StoreProducts = ({
 StoreProducts.propTypes = {
   getAllProductsForStore: PropTypes.func.isRequired,
   deleteProduct: PropTypes.func.isRequired,
-  product: PropTypes.object.isRequired
+  product: PropTypes.object.isRequired,
+  auth: PropTypes.object.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
+  windowWidth: PropTypes.number.isRequired,
 };
 
-const mapStateToProps = state => ({
-  product: state.product
+const mapStateToProps = (state) => ({
+  product: state.product,
+  auth: state.auth,
 });
 
 export default connect(mapStateToProps, {
   getAllProductsForStore,
-  deleteProduct
-})(StoreProducts);
+  deleteProduct,
+  toggleSideNav,
+})(windowSize(StoreProducts));

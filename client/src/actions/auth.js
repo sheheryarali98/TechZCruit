@@ -1,23 +1,24 @@
+import axios from 'axios';
 import {
   REGISTER_SUCCESS,
   REGISTER_FAILED,
-  USER_LOADED,
-  AUTH_ERROR,
   LOGIN_SUCCESS,
   LOGIN_FAILED,
+  USER_LOADED,
+  NAME_UPDATED,
+  PASSWORD_UPDATED,
+  PROFILE_PICTURE_UPLOADED,
+  PROFILE_PICTURE_REMOVED,
   LOGOUT,
   CLEAR_PROFILE,
-  PASSWORD_UPDATED,
-  NAME_UPDATED,
-  PROFILE_PICTURE_UPLOADED,
-  PROFILE_PICTURE_REMOVED
+  AUTH_ERROR,
+  SIDE_NAV_TOGGLED,
 } from '../actions/types';
-import axios from 'axios';
 import { setAlert } from '../actions/alert';
 import setAuthToken from '../utils/setAuthToken';
 
 // Load user
-export const loadUser = () => async dispatch => {
+export const loadUser = () => async (dispatch) => {
   if (localStorage.token) {
     setAuthToken(localStorage.token);
   }
@@ -32,11 +33,11 @@ export const loadUser = () => async dispatch => {
 };
 
 // Register user
-export const register = (name, email, password) => async dispatch => {
+export const register = (name, email, password) => async (dispatch) => {
   const config = {
     headers: {
-      'Content-Type': 'application/json'
-    }
+      'Content-Type': 'application/json',
+    },
   };
 
   const body = JSON.stringify({ name, email, password });
@@ -47,8 +48,8 @@ export const register = (name, email, password) => async dispatch => {
     dispatch({
       type: REGISTER_SUCCESS,
       payload: {
-        token: res.data.token
-      }
+        token: res.data.token,
+      },
     });
 
     dispatch(loadUser());
@@ -57,21 +58,21 @@ export const register = (name, email, password) => async dispatch => {
     console.log(errors);
 
     if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+      errors.forEach((error) => dispatch(setAlert(error.msg, 'danger')));
     }
 
     dispatch({
-      type: REGISTER_FAILED
+      type: REGISTER_FAILED,
     });
   }
 };
 
 // Login user
-export const login = (email, password) => async dispatch => {
+export const login = (email, password) => async (dispatch) => {
   const config = {
     headers: {
-      'Content-Type': 'application/json'
-    }
+      'Content-Type': 'application/json',
+    },
   };
 
   const body = JSON.stringify({ email, password });
@@ -82,8 +83,8 @@ export const login = (email, password) => async dispatch => {
     dispatch({
       type: LOGIN_SUCCESS,
       payload: {
-        token: res.data.token
-      }
+        token: res.data.token,
+      },
     });
 
     dispatch(loadUser());
@@ -91,22 +92,22 @@ export const login = (email, password) => async dispatch => {
     const errors = err.response.data.errors;
 
     if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+      errors.forEach((error) => dispatch(setAlert(error.msg, 'danger')));
     }
 
     dispatch({
-      type: LOGIN_FAILED
+      type: LOGIN_FAILED,
     });
   }
 };
 
 // Change password
-export const changePassword = password => async dispatch => {
+export const changePassword = (password) => async (dispatch) => {
   try {
     const config = {
       headers: {
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     };
 
     const body = JSON.stringify({ password });
@@ -120,18 +121,18 @@ export const changePassword = password => async dispatch => {
     const errors = err.response.data.errors;
 
     if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+      errors.forEach((error) => dispatch(setAlert(error.msg, 'danger')));
     }
   }
 };
 
 // Change name
-export const changeName = name => async dispatch => {
+export const changeName = (name) => async (dispatch) => {
   try {
     const config = {
       headers: {
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     };
 
     const body = JSON.stringify({ name });
@@ -145,18 +146,18 @@ export const changeName = name => async dispatch => {
     const errors = err.response.data.errors;
 
     if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+      errors.forEach((error) => dispatch(setAlert(error.msg, 'danger')));
     }
   }
 };
 
 // Upload profile picture
-export const uploadProfilePicture = file => async dispatch => {
+export const uploadProfilePicture = (file) => async (dispatch) => {
   try {
     const config = {
       headers: {
-        'Content-Type': 'multipart/form-data'
-      }
+        'Content-Type': 'multipart/form-data',
+      },
     };
 
     // const body = JSON.stringify({ file });
@@ -171,7 +172,7 @@ export const uploadProfilePicture = file => async dispatch => {
 
     dispatch({
       type: PROFILE_PICTURE_UPLOADED,
-      payload: res.data.avatar
+      payload: res.data.avatar,
     });
 
     dispatch(setAlert('Profile picture uploaded', 'success'));
@@ -185,13 +186,13 @@ export const uploadProfilePicture = file => async dispatch => {
 };
 
 // Remove profile picture
-export const removeProfilePicture = () => async dispatch => {
+export const removeProfilePicture = () => async (dispatch) => {
   try {
     const res = await axios.put('/api/users/profile-picture/remove');
 
     dispatch({
       type: PROFILE_PICTURE_REMOVED,
-      payload: res.data.avatar
+      payload: res.data.avatar,
     });
 
     dispatch(setAlert('Profile picture removed', 'success'));
@@ -201,7 +202,15 @@ export const removeProfilePicture = () => async dispatch => {
 };
 
 // Logout / Clear profile
-export const logout = () => dispatch => {
+export const logout = () => (dispatch) => {
   dispatch({ type: CLEAR_PROFILE });
   dispatch({ type: LOGOUT });
+};
+
+// Toggle side navbar
+export const toggleSideNav = (displaySideNav) => (dispatch) => {
+  dispatch({
+    type: SIDE_NAV_TOGGLED,
+    payload: displaySideNav,
+  });
 };

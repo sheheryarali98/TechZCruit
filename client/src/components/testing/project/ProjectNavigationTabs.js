@@ -9,7 +9,7 @@ const ProjectNavigationTabs = ({ project, auth, styles }) => {
     <Fragment>
       <Tab.Container defaultActiveKey='description'>
         <Row>
-          <Col md={12}>
+          <Col xs={12} md={12}>
             <Nav justify variant='tabs'>
               <Nav.Item>
                 <Nav.Link eventKey='description'>Description</Nav.Link>
@@ -21,7 +21,7 @@ const ProjectNavigationTabs = ({ project, auth, styles }) => {
           </Col>
         </Row>
         <Row>
-          <Col md={12}>
+          <Col xs={12} md={12}>
             <Tab.Content>
               <Tab.Pane eventKey='description'>
                 <div className='mt-3'>
@@ -31,7 +31,7 @@ const ProjectNavigationTabs = ({ project, auth, styles }) => {
               <Tab.Pane eventKey='comments'>
                 {project !== null && <CommentForm project={project} />}
                 {project !== null && project.comments.length > 0 ? (
-                  project.comments.map(comment => (
+                  project.comments.map((comment) => (
                     <CommentItem
                       key={comment._id}
                       comment={comment}
@@ -55,7 +55,7 @@ const ProjectNavigationTabs = ({ project, auth, styles }) => {
 ProjectNavigationTabs.propTypes = {
   project: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired,
-  styles: PropTypes.object.isRequired
+  styles: PropTypes.object.isRequired,
 };
 
 export default ProjectNavigationTabs;

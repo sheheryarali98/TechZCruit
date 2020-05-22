@@ -1,39 +1,47 @@
-import React, { Fragment, useState, useEffect } from "react";
-import PropTypes from "prop-types";
-import { Form, Button, Row } from "react-bootstrap";
-import { connect } from "react-redux";
+import React, { Fragment, useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { Form, Button, Row } from 'react-bootstrap';
+import { connect } from 'react-redux';
 import {
   getAllProjects,
-  searchProject
-} from "../../../actions/testing/project";
-import ProjectItem from "./ProjectItem";
-import styles from "../../../css/testing/projects/style.module.css";
-import SideNav from "../../layout/SideNav";
-import Alert from "../../layout/Alert";
-import Footer from "../../layout/Footer";
+  searchProject,
+} from '../../../actions/testing/project';
+import ProjectItem from './ProjectItem';
+import styles from '../../../css/testing/projects/style.module.css';
+import SideNav from '../../layout/SideNav';
+import Alert from '../../layout/Alert';
+import Footer from '../../layout/Footer';
+import { toggleSideNav } from '../../../actions/auth';
+import windowSize from 'react-window-size';
 
 const Projects = ({
   project: { loading, projects },
   getAllProjects,
-  searchProject
+  searchProject,
+  toggleSideNav,
+  windowWidth,
+  auth: { displaySideNav },
 }) => {
   useEffect(() => {
     getAllProjects();
-  }, [getAllProjects]);
+
+    toggleSideNav(windowWidth >= 576);
+    // eslint-disable-next-line
+  }, [getAllProjects, toggleSideNav]);
 
   const [formData, setFormData] = useState({
-    description: ""
+    description: '',
   });
 
   const { description } = formData;
 
-  const onChange = e => {
+  const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const onSubmit = e => {
+  const onSubmit = (e) => {
     e.preventDefault();
-    if (description === "") {
+    if (description === '') {
       getAllProjects();
     } else {
       searchProject(description);
@@ -45,7 +53,11 @@ const Projects = ({
       <section className={styles.section}>
         <SideNav styles={styles} />
 
-        <div className={styles.content}>
+        <div
+          className={`${styles.content} ${
+            !displaySideNav ? styles.side_nav_hidden : ''
+          }`}
+        >
           <Alert />
           <div className={styles.heading}>
             <i className='fas fa-user'></i> Product Testing
@@ -54,14 +66,14 @@ const Projects = ({
             Use this platform to test your own software products and offer your
             services to other people in the community
           </div>
-          <Form onSubmit={e => onSubmit(e)}>
+          <Form onSubmit={(e) => onSubmit(e)}>
             <Form.Group>
               <Form.Control
                 type='text'
                 name='description'
                 value={description}
                 placeholder='Search projects'
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
             <Form.Group>
@@ -70,7 +82,7 @@ const Projects = ({
           </Form>
           <Row>
             {!loading && projects.length > 0 ? (
-              projects.map(project => (
+              projects.map((project) => (
                 <ProjectItem
                   key={project._id}
                   project={project}
@@ -92,14 +104,19 @@ const Projects = ({
 Projects.propTypes = {
   project: PropTypes.object.isRequired,
   getAllProjects: PropTypes.func.isRequired,
-  searchProject: PropTypes.func.isRequired
+  searchProject: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
+  windowWidth: PropTypes.number.isRequired,
 };
 
-const mapStateToProps = state => ({
-  project: state.project
+const mapStateToProps = (state) => ({
+  project: state.project,
+  auth: state.auth,
 });
 
 export default connect(mapStateToProps, {
   getAllProjects,
-  searchProject
-})(Projects);
+  searchProject,
+  toggleSideNav,
+})(windowSize(Projects));

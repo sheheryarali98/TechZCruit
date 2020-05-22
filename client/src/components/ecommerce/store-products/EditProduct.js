@@ -5,34 +5,39 @@ import { Form, Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import {
   updateProduct,
-  getProductById
+  getProductById,
 } from '../../../actions/ecommerce/product';
 import styles from '../../../css/ecommerce/store-products/style.module.css';
 import SideNav from '../../layout/SideNav';
 import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
+import { toggleSideNav } from '../../../actions/auth';
+import windowSize from 'react-window-size';
 
 const EditProduct = ({
   history,
   updateProduct,
   match,
   getProductById,
-  product: { loading, product }
+  product: { loading, product },
+  toggleSideNav,
+  windowWidth,
+  auth: { displaySideNav },
 }) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     category: '',
-    price: ''
+    price: '',
   });
 
   const { title, description, category, price } = formData;
 
-  const onChange = e => {
+  const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const onSubmit = e => {
+  const onSubmit = (e) => {
     e.preventDefault();
     updateProduct(match.params.id, match.params.product_id, formData, history);
   };
@@ -44,17 +49,23 @@ const EditProduct = ({
       title: !loading && product.title ? product.title : '',
       description: !loading && product.description ? product.description : '',
       category: !loading && product.category ? product.category : '',
-      price: !loading && product.price ? product.price : ''
+      price: !loading && product.price ? product.price : '',
     });
+
+    toggleSideNav(windowWidth >= 576);
     // eslint-disable-next-line
-  }, [getProductById, loading]);
+  }, [getProductById, loading, toggleSideNav]);
 
   return (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />
 
-        <div className={styles.content}>
+        <div
+          className={`${styles.content} ${
+            !displaySideNav ? styles.side_nav_hidden : ''
+          }`}
+        >
           <Alert />
           <div className={styles.heading}>
             <i className='fas fa-user'></i> Edit product
@@ -62,14 +73,14 @@ const EditProduct = ({
           <div className={styles.sub_heading}>
             Fill in the following information to edit the product for the store
           </div>
-          <Form onSubmit={e => onSubmit(e)}>
+          <Form onSubmit={(e) => onSubmit(e)}>
             <Form.Group>
               <Form.Control
                 type='text'
                 name='title'
                 value={title}
                 placeholder='Title'
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
             <Form.Group>
@@ -79,7 +90,7 @@ const EditProduct = ({
                 name='description'
                 value={description}
                 placeholder='Description'
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
             <Form.Group>
@@ -87,7 +98,7 @@ const EditProduct = ({
                 as='select'
                 name='category'
                 value={category}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               >
                 <option value=''>Please select product category</option>
                 <option value='1'>Web</option>
@@ -107,7 +118,7 @@ const EditProduct = ({
                 name='price'
                 value={price}
                 placeholder='Price in US dollars'
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
             <Button
@@ -138,14 +149,19 @@ const EditProduct = ({
 EditProduct.propTypes = {
   updateProduct: PropTypes.func.isRequired,
   getProductById: PropTypes.func.isRequired,
-  product: PropTypes.object.isRequired
+  product: PropTypes.object.isRequired,
+  auth: PropTypes.object.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
+  windowWidth: PropTypes.number.isRequired,
 };
 
-const mapStateToProps = state => ({
-  product: state.product
+const mapStateToProps = (state) => ({
+  product: state.product,
+  auth: state.auth,
 });
 
 export default connect(mapStateToProps, {
   updateProduct,
-  getProductById
-})(withRouter(EditProduct));
+  getProductById,
+  toggleSideNav,
+})(withRouter(windowSize(EditProduct)));

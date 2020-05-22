@@ -5,7 +5,7 @@ import { Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import {
   deleteJoinRequest,
-  addMemberToGroup
+  addMemberToGroup,
 } from '../../../../actions/community/group';
 import { Row, Col } from 'react-bootstrap';
 
@@ -14,17 +14,17 @@ const GroupRequestItem = ({
   deleteJoinRequest,
   groupId,
   addMemberToGroup,
-  styles
+  styles,
 }) => {
   return (
     <Fragment>
       <Row className={styles.list_item}>
-        <Col md={2}>
+        <Col xs={12} md={3}>
           <Link to={`/profile/${user._id}`}>
             <img src={user.avatar} alt='' className='round-img' />
           </Link>
         </Col>
-        <Col md={10}>
+        <Col xs={12} md={9}>
           <h2>{user.name}</h2>
           <div>
             <Button
@@ -56,10 +56,10 @@ GroupRequestItem.propTypes = {
   deleteJoinRequest: PropTypes.func.isRequired,
   groupId: PropTypes.string.isRequired,
   addMemberToGroup: PropTypes.func.isRequired,
-  styles: PropTypes.object.isRequired
+  styles: PropTypes.object.isRequired,
 };
 
 export default connect(null, {
   deleteJoinRequest,
-  addMemberToGroup
+  addMemberToGroup,
 })(GroupRequestItem);

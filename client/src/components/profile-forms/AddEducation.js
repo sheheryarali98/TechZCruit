@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -8,15 +8,28 @@ import SideNav from '../layout/SideNav';
 import Alert from '../layout/Alert';
 import Footer from '../layout/Footer';
 import { Form, Button } from 'react-bootstrap';
+import { toggleSideNav } from '../../actions/auth';
+import windowSize from 'react-window-size';
 
-const AddEducation = ({ addEducation, history }) => {
+const AddEducation = ({
+  addEducation,
+  history,
+  auth: { displaySideNav },
+  toggleSideNav,
+  windowWidth,
+}) => {
+  useEffect(() => {
+    toggleSideNav(windowWidth >= 576);
+    // eslint-disable-next-line
+  }, [toggleSideNav]);
+
   const [formData, setFormData] = useState({
     school: '',
     degree: '',
     fieldOfStudy: '',
     from: '',
     current: false,
-    to: ''
+    to: '',
   });
 
   const { school, degree, fieldOfStudy, from, current, to } = formData;
@@ -28,21 +41,25 @@ const AddEducation = ({ addEducation, history }) => {
     setFormData({ ...formData, to: '', current: !current });
   };
 
-  const onChange = e => {
+  const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const onSubmit = e => {
+  const onSubmit = (e) => {
     e.preventDefault();
     addEducation(formData, history);
   };
 
   return (
     <Fragment>
-      <section section={styles.section}>
+      <section className={styles.section}>
         <SideNav styles={styles} />
 
-        <div className={styles.content}>
+        <div
+          className={`${styles.content} ${
+            !displaySideNav ? styles.side_nav_hidden : ''
+          }`}
+        >
           <Alert />
           <div className={styles.heading}>
             <i className='fas fa-book'></i> Add Education
@@ -51,14 +68,14 @@ const AddEducation = ({ addEducation, history }) => {
             Fill in the the following information to add an education
           </div>
 
-          <Form onSubmit={e => onSubmit(e)}>
+          <Form onSubmit={(e) => onSubmit(e)}>
             <Form.Group>
               <Form.Control
                 type='text'
                 placeholder='School'
                 name='school'
                 value={school}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
               <Form.Text className='text-muted'>
                 The name of the school you got your education from
@@ -71,7 +88,7 @@ const AddEducation = ({ addEducation, history }) => {
                 placeholder='Degree'
                 name='degree'
                 value={degree}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
               <Form.Text className='text-muted'>
                 The title of your degree such as Bachelor's, Master's etc.
@@ -84,7 +101,7 @@ const AddEducation = ({ addEducation, history }) => {
                 placeholder='Field of Study'
                 name='fieldOfStudy'
                 value={fieldOfStudy}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
               <Form.Text className='text-muted'>
                 The specific field of study of your degree
@@ -98,7 +115,7 @@ const AddEducation = ({ addEducation, history }) => {
                 type='date'
                 name='from'
                 value={from}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
 
@@ -121,7 +138,7 @@ const AddEducation = ({ addEducation, history }) => {
                 disabled={disableToDate}
                 name='to'
                 value={to}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
 
@@ -149,7 +166,17 @@ const AddEducation = ({ addEducation, history }) => {
 };
 
 AddEducation.propTypes = {
-  addEducation: PropTypes.func.isRequired
+  addEducation: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
+  windowWidth: PropTypes.number.isRequired,
 };
 
-export default connect(null, { addEducation })(withRouter(AddEducation));
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+});
+
+export default connect(mapStateToProps, {
+  addEducation,
+  toggleSideNav,
+})(withRouter(windowSize(AddEducation)));

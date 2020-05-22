@@ -7,7 +7,6 @@ import {
   All_CAMPAIGNS_LOADED_FOR_USER,
   CAMPAIGN_UPDATED,
   CAMPAIGN_DELETED,
-  COMMENT_ERROR_CAMPAIGN,
   COMMENT_REMOVED_CAMPAIGN,
   CAMPAIGN_SUPPORTED
 } from '../../actions/types';
@@ -64,7 +63,6 @@ export default function(state = initialState, action) {
         campaign: { ...state.campaign, comments: payload.comments }
       };
     case CAMPAIGN_ERROR:
-    case COMMENT_ERROR_CAMPAIGN:
       return {
         ...state,
         loading: false,

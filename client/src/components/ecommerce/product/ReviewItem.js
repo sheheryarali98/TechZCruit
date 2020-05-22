@@ -10,18 +10,18 @@ const ReviewItem = ({
   auth,
   product,
   deleteReviewOnProduct,
-  styles
+  styles,
 }) => {
   return (
     <Fragment>
       <Row className={styles.list_item}>
-        <Col md={3}>
+        <Col xs={12} md={12} lg={3}>
           <Link to={`/profile/${review.user._id}`}>
             <img src={review.user.avatar} alt='' className='round-img' />
             <div className={styles.user_name}>{review.user.name}</div>
           </Link>
         </Col>
-        <Col md={9}>
+        <Col xs={12} md={12} lg={9}>
           <div className={styles.rating_review}>
             <Form.Check
               type='radio'
@@ -103,9 +103,9 @@ ReviewItem.propTypes = {
   auth: PropTypes.object.isRequired,
   product: PropTypes.object.isRequired,
   deleteReviewOnProduct: PropTypes.func.isRequired,
-  styles: PropTypes.object.isRequired
+  styles: PropTypes.object.isRequired,
 };
 
 export default connect(null, {
-  deleteReviewOnProduct
+  deleteReviewOnProduct,
 })(ReviewItem);

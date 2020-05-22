@@ -9,7 +9,7 @@ const Education = ({ styles, education, removeEducation }) => {
   return (
     <Fragment>
       <div className={styles.title}>Education Credentials</div>
-      <Table className='table table-striped'>
+      <Table striped hover responsive>
         <thead>
           <tr>
             <th scope='col'>School</th>
@@ -19,7 +19,7 @@ const Education = ({ styles, education, removeEducation }) => {
           </tr>
         </thead>
         <tbody>
-          {education.map(education => (
+          {education.map((education) => (
             <tr key={education._id}>
               <td>{education.school}</td>
               <td>
@@ -51,7 +51,7 @@ const Education = ({ styles, education, removeEducation }) => {
 Education.propTypes = {
   education: PropTypes.array.isRequired,
   removeEducation: PropTypes.func.isRequired,
-  styles: PropTypes.object.isRequired
+  styles: PropTypes.object.isRequired,
 };
 
 export default connect(null, { removeEducation })(Education);

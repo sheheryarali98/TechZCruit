@@ -7,7 +7,7 @@ import placeholder from '../../../img/placeholder.png';
 const StoreItem = ({ store: { _id, name, description }, styles }) => {
   return (
     <Fragment>
-      <Col md={3}>
+      <Col xs={12} md={4} lg={3}>
         <Card className={styles.card}>
           <Card.Img variant='top' src={placeholder} />
           <Card.Body>
@@ -29,7 +29,7 @@ const StoreItem = ({ store: { _id, name, description }, styles }) => {
 
 StoreItem.propTypes = {
   store: PropTypes.object.isRequired,
-  styles: PropTypes.object.isRequired
+  styles: PropTypes.object.isRequired,
 };
 
 export default StoreItem;

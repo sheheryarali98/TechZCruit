@@ -1,33 +1,82 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { getAllGroups } from '../../../actions/community/group';
+import { getAllGroups, searchGroup } from '../../../actions/community/group';
 import PropTypes from 'prop-types';
 import GroupItem from './GroupItem';
 import styles from '../../../css/community/groups/style.module.css';
 import SideNav from '../../layout/SideNav';
 import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
-import { Row } from 'react-bootstrap';
+import { Row, Form, Button } from 'react-bootstrap';
+import { toggleSideNav } from '../../../actions/auth';
+import windowSize from 'react-window-size';
 
-const Groups = ({ getAllGroups, group: { loading, groups }, auth }) => {
+const Groups = ({
+  getAllGroups,
+  group: { loading, groups },
+  auth,
+  searchGroup,
+  toggleSideNav,
+  windowWidth,
+}) => {
   useEffect(() => {
     getAllGroups();
-  }, [getAllGroups]);
+
+    toggleSideNav(windowWidth >= 576);
+    // eslint-disable-next-line
+  }, [getAllGroups, toggleSideNav]);
+
+  const [formData, setFormData] = useState({
+    description: '',
+  });
+
+  const { description } = formData;
+
+  const onChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    if (description === '') {
+      getAllGroups();
+    } else {
+      searchGroup(description);
+    }
+  };
 
   return (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />
 
-        <div className={styles.content}>
+        <div
+          className={`${styles.content} ${
+            !auth.displaySideNav ? styles.side_nav_hidden : ''
+          }`}
+        >
           <Alert />
           <div className={styles.heading}>Community</div>
           <div className={styles.sub_heading}>
             Become a part of a group to view posts and discussions.
           </div>
+          <Form onSubmit={(e) => onSubmit(e)}>
+            <Form.Group>
+              <Form.Control
+                type='text'
+                name='description'
+                value={description}
+                placeholder='Search groups'
+                onChange={(e) => onChange(e)}
+              />
+            </Form.Group>
+            <Form.Group>
+              <Button type='submit' hidden />
+            </Form.Group>
+          </Form>
           <Row>
             {!loading && groups.length > 0 ? (
-              groups.map(group => (
+              groups.map((group) => (
                 <GroupItem
                   key={group._id}
                   group={group}
@@ -50,14 +99,19 @@ const Groups = ({ getAllGroups, group: { loading, groups }, auth }) => {
 Groups.propTypes = {
   getAllGroups: PropTypes.func.isRequired,
   group: PropTypes.object.isRequired,
-  auth: PropTypes.object.isRequired
+  auth: PropTypes.object.isRequired,
+  searchGroup: PropTypes.func.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
+  windowWidth: PropTypes.number.isRequired,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   group: state.group,
-  auth: state.auth
+  auth: state.auth,
 });
 
 export default connect(mapStateToProps, {
-  getAllGroups
-})(Groups);
+  getAllGroups,
+  searchGroup,
+  toggleSideNav,
+})(windowSize(Groups));

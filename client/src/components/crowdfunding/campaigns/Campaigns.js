@@ -4,34 +4,42 @@ import { Form, Row, Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import {
   getAllCampaigns,
-  searchCampaign
+  searchCampaign,
 } from '../../../actions/crowdfunding/campaign';
 import CampaignItem from './CampaignItem';
 import styles from '../../../css/crowdfunding/campaigns/style.module.css';
 import SideNav from '../../layout/SideNav';
 import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
+import { toggleSideNav } from '../../../actions/auth';
+import windowSize from 'react-window-size';
 
 const Campaigns = ({
   getAllCampaigns,
   campaign: { loading, campaigns },
-  searchCampaign
+  searchCampaign,
+  toggleSideNav,
+  windowWidth,
+  auth: { displaySideNav },
 }) => {
   useEffect(() => {
     getAllCampaigns();
-  }, [getAllCampaigns]);
+
+    toggleSideNav(windowWidth >= 576);
+    // eslint-disable-next-line
+  }, [getAllCampaigns, toggleSideNav]);
 
   const [formData, setFormData] = useState({
-    description: ''
+    description: '',
   });
 
   const { description } = formData;
 
-  const onChange = e => {
+  const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const onSubmit = e => {
+  const onSubmit = (e) => {
     e.preventDefault();
     if (description === '') {
       getAllCampaigns();
@@ -45,7 +53,11 @@ const Campaigns = ({
       <section className={styles.section}>
         <SideNav styles={styles} />
 
-        <div className={styles.content}>
+        <div
+          className={`${styles.content} ${
+            !displaySideNav ? styles.side_nav_hidden : ''
+          }`}
+        >
           <Alert />
           <div className={styles.heading}>
             <i className='fas fa-user'></i> Crowdfunding
@@ -53,14 +65,14 @@ const Campaigns = ({
           <div className={styles.sub_heading}>
             Support a campaign or acquire funding for your own campaigns
           </div>
-          <Form onSubmit={e => onSubmit(e)}>
+          <Form onSubmit={(e) => onSubmit(e)}>
             <Form.Group>
               <Form.Control
                 type='text'
                 name='description'
                 value={description}
                 placeholder='Search campaigns'
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
             <Form.Group>
@@ -69,7 +81,7 @@ const Campaigns = ({
           </Form>
           <Row>
             {!loading && campaigns.length > 0 ? (
-              campaigns.map(campaign => (
+              campaigns.map((campaign) => (
                 <CampaignItem
                   key={campaign._id}
                   campaign={campaign}
@@ -91,14 +103,19 @@ const Campaigns = ({
 Campaigns.propTypes = {
   getAllCampaigns: PropTypes.func.isRequired,
   campaign: PropTypes.object.isRequired,
-  searchCampaign: PropTypes.func.isRequired
+  searchCampaign: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
+  windowWidth: PropTypes.number.isRequired,
 };
 
-const mapStateToProps = state => ({
-  campaign: state.campaign
+const mapStateToProps = (state) => ({
+  campaign: state.campaign,
+  auth: state.auth,
 });
 
 export default connect(mapStateToProps, {
   getAllCampaigns,
-  searchCampaign
-})(Campaigns);
+  searchCampaign,
+  toggleSideNav,
+})(windowSize(Campaigns));

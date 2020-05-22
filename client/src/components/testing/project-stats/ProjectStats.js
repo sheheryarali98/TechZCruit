@@ -7,18 +7,34 @@ import styles from '../../../css/testing/project-stats/style.module.css';
 import SideNav from '../../layout/SideNav';
 import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
+import { toggleSideNav } from '../../../actions/auth';
+import windowSize from 'react-window-size';
 
-const ProjectStats = ({ project: { project }, getProjectById, match }) => {
+const ProjectStats = ({
+  project: { project },
+  getProjectById,
+  match,
+  toggleSideNav,
+  windowWidth,
+  auth: { displaySideNav },
+}) => {
   useEffect(() => {
     getProjectById(match.params.id);
-  }, [getProjectById, match.params.id]);
+
+    toggleSideNav(windowWidth >= 576);
+    // eslint-disable-next-line
+  }, [getProjectById, match.params.id, toggleSideNav]);
 
   return (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />
 
-        <div className={styles.content}>
+        <div
+          className={`${styles.content} ${
+            !displaySideNav ? styles.side_nav_hidden : ''
+          }`}
+        >
           <Alert />
           <div className={styles.heading}>
             <i className='fas fa-user'></i> Project Statistics
@@ -37,13 +53,18 @@ const ProjectStats = ({ project: { project }, getProjectById, match }) => {
 
 ProjectStats.propTypes = {
   project: PropTypes.object.isRequired,
-  getProjectById: PropTypes.func.isRequired
+  getProjectById: PropTypes.func.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
+  windowWidth: PropTypes.number.isRequired,
+  auth: PropTypes.object.isRequired,
 };
 
-const mapStateToProps = state => ({
-  project: state.project
+const mapStateToProps = (state) => ({
+  project: state.project,
+  auth: state.auth,
 });
 
 export default connect(mapStateToProps, {
-  getProjectById
-})(ProjectStats);
+  getProjectById,
+  toggleSideNav,
+})(windowSize(ProjectStats));

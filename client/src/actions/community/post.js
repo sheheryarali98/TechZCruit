@@ -1,17 +1,16 @@
+import axios from 'axios';
 import {
   ALL_POSTS_LOADED,
+  POST_LOADED,
   POST_ADDED,
-  POST_REMOVED,
-  POST_ERROR,
   POST_LIKED,
   POST_UNLIKED,
-  POST_LOADED,
   COMMENT_ADDED_POST,
   COMMENT_REMOVED_POST,
-  COMMENT_ERROR_POST
+  POST_REMOVED,
+  POST_ERROR
 } from '../types';
 import { setAlert } from '../alert';
-import axios from 'axios';
 
 // Get all posts
 export const getAllPosts = groupId => async dispatch => {
@@ -51,7 +50,7 @@ export const getPostById = postId => async dispatch => {
 export const createNewPost = (groupId, formData) => async dispatch => {
   const config = {
     headers: {
-      "Content-Type": "application/json"
+      'Content-Type': 'application/json'
     }
   };
 
@@ -67,32 +66,42 @@ export const createNewPost = (groupId, formData) => async dispatch => {
       payload: res.data
     });
 
-    dispatch(setAlert("Post Added", "success"));
+    dispatch(setAlert('Post Added', 'success'));
   } catch (err) {
     const errors = err.response.data.errors;
 
     if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, "danger")));
+      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
     }
   }
 };
 
-// Delete post
-export const deletePost = postId => async dispatch => {
+// Comment on post
+export const addComment = (postId, formData) => async dispatch => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+
   try {
-    await axios.delete(`/api/community/posts/${postId}`);
+    const res = await axios.post(
+      `/api/community/posts/comment/${postId}`,
+      formData,
+      config
+    );
 
     dispatch({
-      type: POST_REMOVED,
-      payload: postId
+      type: COMMENT_ADDED_POST,
+      payload: res.data
     });
 
-    dispatch(setAlert("Post Removed", "success"));
+    dispatch(setAlert('Comment added', 'success'));
   } catch (err) {
     const errors = err.response.data.errors;
 
     if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, "danger")));
+      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
     }
   }
 };
@@ -131,32 +140,22 @@ export const unlikePost = postId => async dispatch => {
   }
 };
 
-// Comment on post
-export const addComment = (postId, formData) => async dispatch => {
-  const config = {
-    headers: {
-      "Content-Type": "application/json"
-    }
-  };
-
+// Delete post
+export const deletePost = postId => async dispatch => {
   try {
-    const res = await axios.post(
-      `/api/community/posts/comment/${postId}`,
-      formData,
-      config
-    );
+    await axios.delete(`/api/community/posts/${postId}`);
 
     dispatch({
-      type: COMMENT_ADDED_POST,
-      payload: res.data
+      type: POST_REMOVED,
+      payload: postId
     });
 
-    dispatch(setAlert("Comment added", "success"));
+    dispatch(setAlert('Post Removed', 'success'));
   } catch (err) {
     const errors = err.response.data.errors;
 
     if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, "danger")));
+      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
     }
   }
 };
@@ -173,10 +172,10 @@ export const deleteComment = (postId, commentId) => async dispatch => {
       payload: res.data
     });
 
-    dispatch(setAlert("Comment removed", "success"));
+    dispatch(setAlert('Comment removed', 'success'));
   } catch (err) {
     dispatch({
-      type: COMMENT_ERROR_POST,
+      type: POST_ERROR,
       payload: { msg: err.response.statusText, status: err.response.status }
     });
   }

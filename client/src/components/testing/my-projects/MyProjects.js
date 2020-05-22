@@ -8,21 +8,33 @@ import styles from '../../../css/testing/my-projects/style.module.css';
 import SideNav from '../../layout/SideNav';
 import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
+import { toggleSideNav } from '../../../actions/auth';
+import windowSize from 'react-window-size';
 
 const MyProjects = ({
   project: { loading, projects },
-  getAllProjectsForCurrentUser
+  getAllProjectsForCurrentUser,
+  toggleSideNav,
+  windowWidth,
+  auth: { displaySideNav },
 }) => {
   useEffect(() => {
     getAllProjectsForCurrentUser();
-  }, [getAllProjectsForCurrentUser]);
+
+    toggleSideNav(windowWidth >= 576);
+    // eslint-disable-next-line
+  }, [getAllProjectsForCurrentUser, toggleSideNav]);
 
   return (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />
 
-        <div className={styles.content}>
+        <div
+          className={`${styles.content} ${
+            !displaySideNav ? styles.side_nav_hidden : ''
+          }`}
+        >
           <Alert />
           <div className={styles.heading}>
             <i className='fas fa-user'></i> My Projects
@@ -38,7 +50,7 @@ const MyProjects = ({
             <i className='fas fa-users'></i> Create new project
           </Button>
           {!loading && projects.length > 0 ? (
-            projects.map(project => (
+            projects.map((project) => (
               <MyProjectItem
                 key={project._id}
                 project={project}
@@ -58,13 +70,18 @@ const MyProjects = ({
 
 MyProjects.propTypes = {
   project: PropTypes.object.isRequired,
-  getAllProjectsForCurrentUser: PropTypes.func.isRequired
+  getAllProjectsForCurrentUser: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
+  windowWidth: PropTypes.number.isRequired,
 };
 
-const mapStateToProps = state => ({
-  project: state.project
+const mapStateToProps = (state) => ({
+  project: state.project,
+  auth: state.auth,
 });
 
 export default connect(mapStateToProps, {
-  getAllProjectsForCurrentUser
-})(MyProjects);
+  getAllProjectsForCurrentUser,
+  toggleSideNav,
+})(windowSize(MyProjects));

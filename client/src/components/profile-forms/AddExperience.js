@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -8,8 +8,21 @@ import SideNav from '../layout/SideNav';
 import Alert from '../layout/Alert';
 import Footer from '../layout/Footer';
 import { Form, Button } from 'react-bootstrap';
+import { toggleSideNav } from '../../actions/auth';
+import windowSize from 'react-window-size';
 
-const AddExperience = ({ addExperience, history }) => {
+const AddExperience = ({
+  addExperience,
+  history,
+  auth: { displaySideNav },
+  toggleSideNav,
+  windowWidth,
+}) => {
+  useEffect(() => {
+    toggleSideNav(windowWidth >= 576);
+    // eslint-disable-next-line
+  }, [toggleSideNav]);
+
   const [formData, setFormData] = useState({
     company: '',
     position: '',
@@ -17,7 +30,7 @@ const AddExperience = ({ addExperience, history }) => {
     description: '',
     from: '',
     current: false,
-    to: ''
+    to: '',
   });
 
   const {
@@ -27,7 +40,7 @@ const AddExperience = ({ addExperience, history }) => {
     description,
     from,
     current,
-    to
+    to,
   } = formData;
 
   const [disableToDate, setDisableToDate] = useState(false);
@@ -37,11 +50,11 @@ const AddExperience = ({ addExperience, history }) => {
     setFormData({ ...formData, to: '', current: !current });
   };
 
-  const onChange = e => {
+  const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const onSubmit = e => {
+  const onSubmit = (e) => {
     e.preventDefault();
     addExperience(formData, history);
   };
@@ -51,7 +64,11 @@ const AddExperience = ({ addExperience, history }) => {
       <section className={styles.section}>
         <SideNav styles={styles} />
 
-        <div className={styles.content}>
+        <div
+          className={`${styles.content} ${
+            !displaySideNav ? styles.side_nav_hidden : ''
+          }`}
+        >
           <Alert />
           <div className={styles.heading}>
             <i className='fab fa-black-tie'></i> Add Experience
@@ -60,7 +77,7 @@ const AddExperience = ({ addExperience, history }) => {
             Fill in the following information to add an experience
           </div>
 
-          <Form onSubmit={e => onSubmit(e)}>
+          <Form onSubmit={(e) => onSubmit(e)}>
             <Form.Group>
               <Form.Control
                 type='text'
@@ -68,7 +85,7 @@ const AddExperience = ({ addExperience, history }) => {
                 placeholder='Company'
                 name='company'
                 value={company}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
               <Form.Text className='text-muted'>
                 This can be your own company and also a company that you work
@@ -83,7 +100,7 @@ const AddExperience = ({ addExperience, history }) => {
                 placeholder='Position'
                 name='position'
                 value={position}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
               <Form.Text className='text-muted'>
                 Your position at that company
@@ -97,7 +114,7 @@ const AddExperience = ({ addExperience, history }) => {
                 placeholder='Location'
                 name='location'
                 value={location}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
               <Form.Text className='text-muted'>
                 The location where the company is located
@@ -112,7 +129,7 @@ const AddExperience = ({ addExperience, history }) => {
                 placeholder='Description'
                 name='description'
                 value={description}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
               <Form.Text className='text-muted'>
                 A description of the tasks you performed at the company
@@ -126,7 +143,7 @@ const AddExperience = ({ addExperience, history }) => {
                 type='date'
                 name='from'
                 value={from}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
 
@@ -148,7 +165,7 @@ const AddExperience = ({ addExperience, history }) => {
                 disabled={disableToDate}
                 name='to'
                 value={to}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
 
@@ -176,7 +193,17 @@ const AddExperience = ({ addExperience, history }) => {
 };
 
 AddExperience.propTypes = {
-  addExperience: PropTypes.func.isRequired
+  addExperience: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
+  windowWidth: PropTypes.number.isRequired,
 };
 
-export default connect(null, { addExperience })(withRouter(AddExperience));
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+});
+
+export default connect(mapStateToProps, {
+  addExperience,
+  toggleSideNav,
+})(withRouter(windowSize(AddExperience)));

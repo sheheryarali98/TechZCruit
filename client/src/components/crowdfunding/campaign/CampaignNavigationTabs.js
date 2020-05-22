@@ -9,7 +9,7 @@ const CampaignNavigationTabs = ({ campaign, auth, styles }) => {
     <Fragment>
       <Tab.Container defaultActiveKey='description'>
         <Row>
-          <Col md={12}>
+          <Col xs={12} md={12}>
             <Nav justify variant='tabs'>
               <Nav.Item>
                 <Nav.Link eventKey='description'>Description</Nav.Link>
@@ -21,7 +21,7 @@ const CampaignNavigationTabs = ({ campaign, auth, styles }) => {
           </Col>
         </Row>
         <Row>
-          <Col md={12}>
+          <Col xs={12} md={12}>
             <Tab.Content>
               <Tab.Pane eventKey='description'>
                 <div className='mt-3'>
@@ -31,7 +31,7 @@ const CampaignNavigationTabs = ({ campaign, auth, styles }) => {
               <Tab.Pane eventKey='comments'>
                 {campaign !== null && <CommentForm campaign={campaign} />}
                 {campaign !== null && campaign.comments.length > 0 ? (
-                  campaign.comments.map(comment => (
+                  campaign.comments.map((comment) => (
                     <CommentItem
                       comment={comment}
                       auth={auth}
@@ -54,7 +54,7 @@ const CampaignNavigationTabs = ({ campaign, auth, styles }) => {
 CampaignNavigationTabs.propTypes = {
   campaign: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired,
-  styles: PropTypes.object.isRequired
+  styles: PropTypes.object.isRequired,
 };
 
 export default CampaignNavigationTabs;

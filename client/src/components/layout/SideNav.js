@@ -3,10 +3,12 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-const SideNav = ({ styles, auth: { loading, user } }) => {
+const SideNav = ({ styles, auth: { loading, user, displaySideNav } }) => {
   return (
     <Fragment>
-      <div className={styles.side_nav}>
+      <div
+        className={`${styles.side_nav} ${!displaySideNav ? styles.hidden : ''}`}
+      >
         <div className={styles.side_nav_heading}>User Management</div>
         <Link to='/dashboard'>Dashboard</Link>
         <Link to={!loading && user !== null ? `/profile/${user._id}` : ''}>
@@ -31,6 +33,10 @@ const SideNav = ({ styles, auth: { loading, user } }) => {
         <Link to='/ecommerce'>All products</Link>
         <Link to='/ecommerce/stores'>All stores</Link>
         <Link to='/ecommerce/my-stores'>My stores</Link>
+
+        <div className={styles.side_nav_heading}>Freelance</div>
+        <Link to='/freelance'>Homepage</Link>
+        <Link to='/freelance/my-services'>My services</Link>
       </div>
     </Fragment>
   );
@@ -38,11 +44,11 @@ const SideNav = ({ styles, auth: { loading, user } }) => {
 
 SideNav.propTypes = {
   styles: PropTypes.object.isRequired,
-  auth: PropTypes.object.isRequired
+  auth: PropTypes.object.isRequired,
 };
 
-const mapStateToProps = state => ({
-  auth: state.auth
+const mapStateToProps = (state) => ({
+  auth: state.auth,
 });
 
 export default connect(mapStateToProps, {})(SideNav);

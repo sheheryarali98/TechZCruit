@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import ProfilePicture from './ProfilePicture';
 import Name from './Name';
@@ -8,14 +8,25 @@ import styles from '../../css/settings/style.module.css';
 import SideNav from '../layout/SideNav';
 import Alert from '../layout/Alert';
 import Footer from '../layout/Footer';
+import { toggleSideNav } from '../../actions/auth';
+import windowSize from 'react-window-size';
 
-const Settings = ({ auth }) => {
+const Settings = ({ auth, toggleSideNav, windowWidth }) => {
+  useEffect(() => {
+    toggleSideNav(windowWidth >= 576);
+    // eslint-disable-next-line
+  }, [toggleSideNav]);
+
   return (
     <Fragment>
       <section>
         <SideNav styles={styles} />
 
-        <div className={styles.content}>
+        <div
+          className={`${styles.content} ${
+            !auth.displaySideNav ? styles.side_nav_hidden : ''
+          }`}
+        >
           <Alert />
           <div className={styles.heading}>
             <i className='fas fa-user'></i> Settings
@@ -32,11 +43,15 @@ const Settings = ({ auth }) => {
 };
 
 Settings.propTypes = {
-  auth: PropTypes.object.isRequired
+  auth: PropTypes.object.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
+  windowWidth: PropTypes.number.isRequired,
 };
 
-const mapStateToProps = state => ({
-  auth: state.auth
+const mapStateToProps = (state) => ({
+  auth: state.auth,
 });
 
-export default connect(mapStateToProps)(Settings);
+export default connect(mapStateToProps, {
+  toggleSideNav,
+})(windowSize(Settings));

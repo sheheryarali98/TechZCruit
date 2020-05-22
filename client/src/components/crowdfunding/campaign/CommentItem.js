@@ -10,19 +10,19 @@ const CommentItem = ({
   auth,
   campaign,
   deleteCommentOnCampaign,
-  styles
+  styles,
 }) => {
   return (
     <Fragment>
       <Row className={styles.list_item}>
-        <Col md={3}>
+        <Col xs={12} md={12} lg={3}>
           <Link to={`/profile/${comment.user._id}`}>
             <img src={comment.user.avatar} alt='' className='round-img' />
             <div className={styles.user_name}>{comment.user.name}</div>
           </Link>
         </Col>
-        <Col md={9}>
-          <div className='my-3'>{comment.description}</div>
+        <Col xs={12} md={12} lg={9}>
+          <div className='mb-3'>{comment.description}</div>
           <div>
             {auth.user !== null &&
               (auth.user._id === campaign.user._id ||
@@ -48,9 +48,9 @@ CommentItem.propTypes = {
   auth: PropTypes.object.isRequired,
   campaign: PropTypes.object.isRequired,
   deleteCommentOnCampaign: PropTypes.func.isRequired,
-  styles: PropTypes.object.isRequired
+  styles: PropTypes.object.isRequired,
 };
 
 export default connect(null, {
-  deleteCommentOnCampaign
+  deleteCommentOnCampaign,
 })(CommentItem);

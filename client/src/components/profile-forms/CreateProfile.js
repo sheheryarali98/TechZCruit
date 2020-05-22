@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
@@ -8,8 +8,21 @@ import styles from '../../css/profile-forms/style.module.css';
 import SideNav from '../layout/SideNav';
 import Alert from '../layout/Alert';
 import Footer from '../layout/Footer';
+import { toggleSideNav } from '../../actions/auth';
+import windowSize from 'react-window-size';
 
-const CreateProfile = ({ createProfile, history }) => {
+const CreateProfile = ({
+  createProfile,
+  history,
+  auth: { displaySideNav },
+  toggleSideNav,
+  windowWidth,
+}) => {
+  useEffect(() => {
+    toggleSideNav(windowWidth >= 576);
+    // eslint-disable-next-line
+  }, [toggleSideNav]);
+
   const [formData, setFormData] = useState({
     status: '',
     company: '',
@@ -22,7 +35,7 @@ const CreateProfile = ({ createProfile, history }) => {
     twitter: '',
     linkedin: '',
     instagram: '',
-    youtube: ''
+    youtube: '',
   });
 
   const {
@@ -37,7 +50,7 @@ const CreateProfile = ({ createProfile, history }) => {
     twitter,
     linkedin,
     instagram,
-    youtube
+    youtube,
   } = formData;
 
   const [displaySocialLinks, setDisplaySocialLinks] = useState(false);
@@ -46,11 +59,11 @@ const CreateProfile = ({ createProfile, history }) => {
     setDisplaySocialLinks(!displaySocialLinks);
   };
 
-  const onChange = e => {
+  const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const onSubmit = e => {
+  const onSubmit = (e) => {
     e.preventDefault();
     createProfile(formData, history);
   };
@@ -60,7 +73,11 @@ const CreateProfile = ({ createProfile, history }) => {
       <section className={styles.section}>
         <SideNav styles={styles} />
 
-        <div className={styles.content}>
+        <div
+          className={`${styles.content} ${
+            !displaySideNav ? styles.side_nav_hidden : ''
+          }`}
+        >
           <Alert />
           <div className={styles.heading}>
             <i className='fas fa-user'></i> Create Profile
@@ -68,13 +85,13 @@ const CreateProfile = ({ createProfile, history }) => {
           <div className={styles.sub_heading}>
             Fill in the following information to setup your profile
           </div>
-          <Form onSubmit={e => onSubmit(e)}>
+          <Form onSubmit={(e) => onSubmit(e)}>
             <Form.Group>
               <Form.Control
                 as='select'
                 name='status'
                 value={status}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               >
                 <option value=''>Please select your professional status</option>
                 <option value='Developer'>Developer</option>
@@ -94,7 +111,7 @@ const CreateProfile = ({ createProfile, history }) => {
                 placeholder='Company'
                 name='company'
                 value={company}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
               <Form.Text className='text-muted'>
                 This can be your own company and also a company that you work
@@ -108,7 +125,7 @@ const CreateProfile = ({ createProfile, history }) => {
                 placeholder='Website'
                 name='website'
                 value={website}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
               <Form.Text className='text-muted'>
                 This is the webiste website where you showcase your work
@@ -121,7 +138,7 @@ const CreateProfile = ({ createProfile, history }) => {
                 placeholder='Location'
                 name='location'
                 value={location}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
               <Form.Text className='text-muted'>
                 This is your location where you live or work at
@@ -134,7 +151,7 @@ const CreateProfile = ({ createProfile, history }) => {
                 placeholder='Skills'
                 name='skills'
                 value={skills}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
               <Form.Text className='text-muted'>
                 Please enter your skills separated by commas such as HTML, CSS,
@@ -148,7 +165,7 @@ const CreateProfile = ({ createProfile, history }) => {
                 placeholder='GitHub username'
                 name='githubUsername'
                 value={githubUsername}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
               <Form.Text className='text-muted'>
                 Please enter your GitHub username
@@ -163,7 +180,7 @@ const CreateProfile = ({ createProfile, history }) => {
                 placeholder='A short bio about yourself'
                 name='bio'
                 value={bio}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               ></Form.Control>
               <Form.Text className='text-muted'>
                 Please enter some information so that people may get to know you
@@ -171,7 +188,7 @@ const CreateProfile = ({ createProfile, history }) => {
             </Form.Group>
 
             <div className='my-3'>
-              <Button onClick={toggleSocialLinks} variant='light'>
+              <Button onClick={toggleSocialLinks} variant='primary'>
                 Add Social Network Links (Optional)
               </Button>
             </div>
@@ -187,7 +204,7 @@ const CreateProfile = ({ createProfile, history }) => {
                     placeholder='Fabebook URL'
                     name='facebook'
                     value={facebook}
-                    onChange={e => onChange(e)}
+                    onChange={(e) => onChange(e)}
                   />
                 </div>
 
@@ -200,7 +217,7 @@ const CreateProfile = ({ createProfile, history }) => {
                     placeholder='Twitter URL'
                     name='twitter'
                     value={twitter}
-                    onChange={e => onChange(e)}
+                    onChange={(e) => onChange(e)}
                   />
                 </div>
 
@@ -213,7 +230,7 @@ const CreateProfile = ({ createProfile, history }) => {
                     placeholder='Linkedin URL'
                     name='linkedin'
                     value={linkedin}
-                    onChange={e => onChange(e)}
+                    onChange={(e) => onChange(e)}
                   />
                 </div>
 
@@ -226,7 +243,7 @@ const CreateProfile = ({ createProfile, history }) => {
                     placeholder='Instagram URL'
                     name='instagram'
                     value={instagram}
-                    onChange={e => onChange(e)}
+                    onChange={(e) => onChange(e)}
                   />
                 </div>
 
@@ -239,7 +256,7 @@ const CreateProfile = ({ createProfile, history }) => {
                     placeholder='Youtube URL'
                     name='youtube'
                     value={youtube}
-                    onChange={e => onChange(e)}
+                    onChange={(e) => onChange(e)}
                   />
                 </div>
               </Fragment>
@@ -268,7 +285,17 @@ const CreateProfile = ({ createProfile, history }) => {
 };
 
 CreateProfile.propTypes = {
-  createProfile: PropTypes.func.isRequired
+  createProfile: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
+  windowWidth: PropTypes.number.isRequired,
 };
 
-export default connect(null, { createProfile })(withRouter(CreateProfile));
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+});
+
+export default connect(mapStateToProps, {
+  createProfile,
+  toggleSideNav,
+})(withRouter(windowSize(CreateProfile)));

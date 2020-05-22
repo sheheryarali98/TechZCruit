@@ -4,29 +4,41 @@ import { Button, Table } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import {
   getProjectById,
-  deleteTestcaseForProject
+  deleteTestcaseForProject,
 } from '../../../actions/testing/project';
 import styles from '../../../css/testing/project-testcases/style.module.css';
 import SideNav from '../../layout/SideNav';
 import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
+import { toggleSideNav } from '../../../actions/auth';
+import windowSize from 'react-window-size';
 
 const ProjectTestcases = ({
   project: { loading, project },
   getProjectById,
   match,
-  deleteTestcaseForProject
+  deleteTestcaseForProject,
+  toggleSideNav,
+  windowWidth,
+  auth: { displaySideNav },
 }) => {
   useEffect(() => {
     getProjectById(match.params.id);
-  }, [getProjectById, match.params.id]);
+
+    toggleSideNav(windowWidth >= 576);
+    // eslint-disable-next-line
+  }, [getProjectById, match.params.id, toggleSideNav]);
 
   return (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />
 
-        <div className={styles.content}>
+        <div
+          className={`${styles.content} ${
+            !displaySideNav ? styles.side_nav_hidden : ''
+          }`}
+        >
           <Alert />
           <div className={styles.heading}>
             <i className='fas fa-user'></i> Project test cases
@@ -45,7 +57,7 @@ const ProjectTestcases = ({
           </Button>
 
           {!loading && project !== null && project.testCases.length > 0 ? (
-            <Table striped hover>
+            <Table striped hover responsive>
               <thead>
                 <tr>
                   <th>Name</th>
@@ -55,7 +67,7 @@ const ProjectTestcases = ({
                 </tr>
               </thead>
               <tbody>
-                {project.testCases.map(testcase => (
+                {project.testCases.map((testcase) => (
                   <tr>
                     <td>{testcase.name}</td>
                     <td>{testcase.description}</td>
@@ -88,14 +100,19 @@ const ProjectTestcases = ({
 ProjectTestcases.propTypes = {
   project: PropTypes.object.isRequired,
   getProjectById: PropTypes.func.isRequired,
-  deleteTestcaseForProject: PropTypes.func.isRequired
+  deleteTestcaseForProject: PropTypes.func.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
+  windowWidth: PropTypes.number.isRequired,
+  auth: PropTypes.object.isRequired,
 };
 
-const mapStateToProps = state => ({
-  project: state.project
+const mapStateToProps = (state) => ({
+  project: state.project,
+  auth: state.auth,
 });
 
 export default connect(mapStateToProps, {
   getProjectById,
-  deleteTestcaseForProject
-})(ProjectTestcases);
+  deleteTestcaseForProject,
+  toggleSideNav,
+})(windowSize(ProjectTestcases));

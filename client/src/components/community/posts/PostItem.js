@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import {
   deletePost,
   likePost,
-  unlikePost
+  unlikePost,
 } from '../../../actions/community/post';
 import { Row, Col, Button } from 'react-bootstrap';
 
@@ -15,18 +15,18 @@ const PostItem = ({
   deletePost,
   likePost,
   unlikePost,
-  styles
+  styles,
 }) => {
   return (
     <Fragment>
       <Row className={styles.list_item}>
-        <Col md={2}>
+        <Col xs={12} md={3}>
           <Link to={`/profile/${user._id}`}>
             <img src={user.avatar} alt='' className='round-img' />
             <div className={styles.user_name}>{user.name}</div>
           </Link>
         </Col>
-        <Col md={10}>
+        <Col xs={12} md={9}>
           <div className='text-truncate'>{description}</div>
           <div className='my-3'>
             <Button variant='dark' onClick={() => likePost(_id)}>
@@ -57,11 +57,11 @@ PostItem.propTypes = {
   deletePost: PropTypes.func.isRequired,
   likePost: PropTypes.func.isRequired,
   unlikePost: PropTypes.func.isRequired,
-  styles: PropTypes.object.isRequired
+  styles: PropTypes.object.isRequired,
 };
 
 export default connect(null, {
   deletePost,
   likePost,
-  unlikePost
+  unlikePost,
 })(PostItem);

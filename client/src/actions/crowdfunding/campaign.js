@@ -1,18 +1,17 @@
+import axios from 'axios';
 import {
-  CAMPAIGN_CREATED,
-  CAMPAIGN_LOADED,
-  COMMENT_ADDED_CAMPAIGN,
-  CAMPAIGN_ERROR,
   All_CAMPAIGNS_LOADED,
   All_CAMPAIGNS_LOADED_FOR_USER,
+  CAMPAIGN_LOADED,
+  CAMPAIGN_CREATED,
   CAMPAIGN_UPDATED,
-  CAMPAIGN_DELETED,
-  COMMENT_ERROR_CAMPAIGN,
+  CAMPAIGN_SUPPORTED,
+  COMMENT_ADDED_CAMPAIGN,
   COMMENT_REMOVED_CAMPAIGN,
-  CAMPAIGN_SUPPORTED
+  CAMPAIGN_DELETED,
+  CAMPAIGN_ERROR
 } from '../types';
 import { setAlert } from '../alert';
-import axios from 'axios';
 
 // Get all campaigns
 export const getAllCampaigns = () => async dispatch => {
@@ -41,6 +40,43 @@ export const getAllCampaignsForUser = () => async dispatch => {
       payload: res.data
     });
   } catch (err) {
+    dispatch({
+      type: CAMPAIGN_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status }
+    });
+  }
+};
+
+//  Get campaign by id
+export const getCampaignById = id => async dispatch => {
+  try {
+    const res = await axios.get(`/api/crowdfunding/campaigns/${id}`);
+
+    dispatch({
+      type: CAMPAIGN_LOADED,
+      payload: res.data
+    });
+  } catch (err) {
+    dispatch({
+      type: CAMPAIGN_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status }
+    });
+  }
+};
+
+// Search for a campaign
+export const searchCampaign = description => async dispatch => {
+  try {
+    const res = await axios.get(
+      `/api/crowdfunding/campaigns/search/${description}`
+    );
+
+    dispatch({
+      type: All_CAMPAIGNS_LOADED,
+      payload: res.data
+    });
+  } catch (err) {
+    console.log(err);
     dispatch({
       type: CAMPAIGN_ERROR,
       payload: { msg: err.response.statusText, status: err.response.status }
@@ -79,15 +115,60 @@ export const createCampaign = (formData, history) => async dispatch => {
   }
 };
 
-//  Get campaign by id
-export const getCampaignById = id => async dispatch => {
+// Comment on campaign
+export const addCommentOnCampaign = (id, formData) => async dispatch => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+
   try {
-    const res = await axios.get(`/api/crowdfunding/campaigns/${id}`);
+    const res = await axios.put(
+      `/api/crowdfunding/campaigns/comment/${id}`,
+      formData,
+      config
+    );
 
     dispatch({
-      type: CAMPAIGN_LOADED,
+      type: COMMENT_ADDED_CAMPAIGN,
       payload: res.data
     });
+
+    dispatch(setAlert('Comment added', 'success'));
+  } catch (err) {
+    const errors = err.response.data.errors;
+    if (errors) {
+      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+    }
+  }
+};
+
+// Support a campaign
+export const supportCampaign = (campaignId, amount) => async dispatch => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+
+  const body = JSON.stringify({ amount });
+
+  try {
+    const res = await axios.put(
+      `/api/crowdfunding/campaigns/support/${campaignId}`,
+      body,
+      config
+    );
+
+    dispatch({
+      type: CAMPAIGN_SUPPORTED,
+      payload: res.data.campaign
+    });
+
+    dispatch(setAlert('Campaign supported', 'success'));
+
+    return res.data.clientSecret;
   } catch (err) {
     dispatch({
       type: CAMPAIGN_ERROR,
@@ -146,35 +227,6 @@ export const deleteCampaign = id => async dispatch => {
   }
 };
 
-// Comment on campaign
-export const addCommentOnCampaign = (id, formData) => async dispatch => {
-  const config = {
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  };
-
-  try {
-    const res = await axios.put(
-      `/api/crowdfunding/campaigns/comment/${id}`,
-      formData,
-      config
-    );
-
-    dispatch({
-      type: COMMENT_ADDED_CAMPAIGN,
-      payload: res.data
-    });
-
-    dispatch(setAlert('Comment added', 'success'));
-  } catch (err) {
-    const errors = err.response.data.errors;
-    if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
-    }
-  }
-};
-
 // Delete comment on campaign
 export const deleteCommentOnCampaign = (
   campaignId,
@@ -192,59 +244,6 @@ export const deleteCommentOnCampaign = (
 
     dispatch(setAlert('Comment removed', 'success'));
   } catch (err) {
-    dispatch({
-      type: COMMENT_ERROR_CAMPAIGN,
-      payload: { msg: err.response.statusText, status: err.response.status }
-    });
-  }
-};
-
-// Support a campaign
-export const supportCampaign = (campaignId, amount) => async dispatch => {
-  const config = {
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  };
-
-  const body = JSON.stringify({ amount });
-
-  try {
-    const res = await axios.put(
-      `/api/crowdfunding/campaigns/support/${campaignId}`,
-      body,
-      config
-    );
-
-    dispatch({
-      type: CAMPAIGN_SUPPORTED,
-      payload: res.data.campaign
-    });
-
-    dispatch(setAlert('Campaign supported', 'success'));
-
-    return res.data.clientSecret;
-  } catch (err) {
-    dispatch({
-      type: CAMPAIGN_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
-    });
-  }
-};
-
-// Search for a campaign
-export const searchCampaign = description => async dispatch => {
-  try {
-    const res = await axios.get(
-      `/api/crowdfunding/campaigns/search/${description}`
-    );
-
-    dispatch({
-      type: All_CAMPAIGNS_LOADED,
-      payload: res.data
-    });
-  } catch (err) {
-    console.log(err);
     dispatch({
       type: CAMPAIGN_ERROR,
       payload: { msg: err.response.statusText, status: err.response.status }

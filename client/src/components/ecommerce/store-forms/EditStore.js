@@ -8,26 +8,31 @@ import styles from '../../../css/ecommerce/store-forms/style.module.css';
 import SideNav from '../../layout/SideNav';
 import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
+import { toggleSideNav } from '../../../actions/auth';
+import windowSize from 'react-window-size';
 
 const EditGroup = ({
   getStoreById,
   match,
   store: { loading, store },
   updateStore,
-  history
+  history,
+  toggleSideNav,
+  windowWidth,
+  auth: { displaySideNav },
 }) => {
   const [formData, setFormData] = useState({
     name: '',
-    description: ''
+    description: '',
   });
 
   const { name, description } = formData;
 
-  const onChange = e => {
+  const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const onSubmit = e => {
+  const onSubmit = (e) => {
     e.preventDefault();
     updateStore(formData, match.params.id, history);
   };
@@ -37,17 +42,23 @@ const EditGroup = ({
 
     setFormData({
       name: !loading && store.name ? store.name : '',
-      description: !loading && store.description ? store.description : ''
+      description: !loading && store.description ? store.description : '',
     });
+
+    toggleSideNav(windowWidth >= 576);
     // eslint-disable-next-line
-  }, [getStoreById, loading, match.params.id]);
+  }, [getStoreById, loading, match.params.id, toggleSideNav]);
 
   return (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />
 
-        <div className={styles.content}>
+        <div
+          className={`${styles.content} ${
+            !displaySideNav ? styles.side_nav_hidden : ''
+          }`}
+        >
           <Alert />
           <div className={styles.heading}>
             <i className='fas fa-user'></i> Edit Store
@@ -55,14 +66,14 @@ const EditGroup = ({
           <div className={styles.sub_heading}>
             Fill in the following information to edit the store info
           </div>
-          <Form onSubmit={e => onSubmit(e)}>
+          <Form onSubmit={(e) => onSubmit(e)}>
             <Form.Group>
               <Form.Control
                 type='text'
                 placeholder='Name'
                 name='name'
                 value={name}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
             <Form.Group>
@@ -72,7 +83,7 @@ const EditGroup = ({
                 placeholder='Description'
                 name='description'
                 value={description}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
             <Button
@@ -101,14 +112,19 @@ const EditGroup = ({
 EditGroup.propTypes = {
   getStoreById: PropTypes.func.isRequired,
   store: PropTypes.object.isRequired,
-  updateStore: PropTypes.func.isRequired
+  updateStore: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
+  windowWidth: PropTypes.number.isRequired,
 };
 
-const mapStateToProps = state => ({
-  store: state.store
+const mapStateToProps = (state) => ({
+  store: state.store,
+  auth: state.auth,
 });
 
 export default connect(mapStateToProps, {
   getStoreById,
-  updateStore
-})(withRouter(EditGroup));
+  updateStore,
+  toggleSideNav,
+})(withRouter(windowSize(EditGroup)));

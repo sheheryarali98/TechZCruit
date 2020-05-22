@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Button } from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
@@ -8,22 +8,35 @@ import styles from '../../../css/testing/project-forms/style.module.css';
 import SideNav from '../../layout/SideNav';
 import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
+import { toggleSideNav } from '../../../actions/auth';
+import windowSize from 'react-window-size';
 
-const CreateProject = ({ history, createProject }) => {
+const CreateProject = ({
+  history,
+  createProject,
+  toggleSideNav,
+  windowWidth,
+  auth: { displaySideNav },
+}) => {
+  useEffect(() => {
+    toggleSideNav(windowWidth >= 576);
+    // eslint-disable-next-line
+  }, [toggleSideNav]);
+
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     url: '',
-    amount: ''
+    amount: '',
   });
 
   const { name, description, url, amount } = formData;
 
-  const onChange = e => {
+  const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const onSubmit = e => {
+  const onSubmit = (e) => {
     e.preventDefault();
     createProject(formData, history);
   };
@@ -33,7 +46,11 @@ const CreateProject = ({ history, createProject }) => {
       <section className={styles.section}>
         <SideNav styles={styles} />
 
-        <div className={styles.content}>
+        <div
+          className={`${styles.content} ${
+            !displaySideNav ? styles.side_nav_hidden : ''
+          }`}
+        >
           <Alert />
           <div className={styles.heading}>
             <i className='fas fa-user'></i> Create Project
@@ -41,14 +58,14 @@ const CreateProject = ({ history, createProject }) => {
           <div className={styles.sub_heading}>
             Fill in the following information to create a new project
           </div>
-          <Form onSubmit={e => onSubmit(e)}>
+          <Form onSubmit={(e) => onSubmit(e)}>
             <Form.Group>
               <Form.Control
                 type='text'
                 placeholder='Name'
                 name='name'
                 value={name}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
             <Form.Group>
@@ -58,7 +75,7 @@ const CreateProject = ({ history, createProject }) => {
                 placeholder='Description'
                 name='description'
                 value={description}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
             <Form.Group>
@@ -67,7 +84,7 @@ const CreateProject = ({ history, createProject }) => {
                 placeholder='URL'
                 name='url'
                 value={url}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
             <Form.Group>
@@ -76,7 +93,7 @@ const CreateProject = ({ history, createProject }) => {
                 placeholder='Amount'
                 name='amount'
                 value={amount}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
             <Button
@@ -103,9 +120,17 @@ const CreateProject = ({ history, createProject }) => {
 };
 
 CreateProject.propTypes = {
-  createProject: PropTypes.func.isRequired
+  createProject: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
+  windowWidth: PropTypes.number.isRequired,
 };
 
-export default connect(null, {
-  createProject
-})(withRouter(CreateProject));
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+});
+
+export default connect(mapStateToProps, {
+  createProject,
+  toggleSideNav,
+})(withRouter(windowSize(CreateProject)));

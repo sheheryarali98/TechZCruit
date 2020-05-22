@@ -27,3 +27,9 @@
     right: -600px;
   }
 }
+
+@media (max-width: 576px) {
+  .alert_container_style {
+    width: 250px;
+  }
+}

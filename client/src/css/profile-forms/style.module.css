@@ -11,6 +11,7 @@
   padding-bottom: 5rem;
   padding-right: 0.7rem;
   padding-left: 0.7rem;
+  z-index: 1;
 }
 
 .side_nav::-webkit-scrollbar {
@@ -56,6 +57,14 @@
   padding-bottom: 3rem;
   padding-left: 2.5rem;
   padding-right: 2.5rem;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.side_nav_hidden {
+  margin-left: 0;
 }
 
 .heading {
@@ -139,4 +148,24 @@ section::after {
   flex-direction: column;
   justify-content: center;
   border-top: solid 1px white;
+}
+
+@media (max-width: 576px) {
+  .content {
+    margin-left: 0;
+    padding-left: 1.3rem;
+    padding-right: 1.3rem;
+  }
+
+  .heading {
+    font-size: 2rem;
+  }
+
+  .heading i {
+    font-size: 2rem;
+  }
+
+  .sub_heading {
+    font-size: 1.5rem;
+  }
 }

@@ -5,26 +5,31 @@ import { connect } from 'react-redux';
 import { Form, Button } from 'react-bootstrap';
 import {
   getCampaignById,
-  updateCampaign
+  updateCampaign,
 } from '../../../actions/crowdfunding/campaign';
 import styles from '../../../css/crowdfunding/campaign-forms/style.module.css';
 import SideNav from '../../layout/SideNav';
 import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
+import { toggleSideNav } from '../../../actions/auth';
+import windowSize from 'react-window-size';
 
 const EditCampaign = ({
   getCampaignById,
   match,
   campaign: { campaign, loading },
   updateCampaign,
-  history
+  history,
+  toggleSideNav,
+  windowWidth,
+  auth: { displaySideNav },
 }) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     category: '',
     fundsRequired: '',
-    completionDate: ''
+    completionDate: '',
   });
 
   const {
@@ -32,14 +37,14 @@ const EditCampaign = ({
     description,
     category,
     fundsRequired,
-    completionDate
+    completionDate,
   } = formData;
 
-  const onChange = e => {
+  const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const onSubmit = e => {
+  const onSubmit = (e) => {
     e.preventDefault();
     updateCampaign(match.params.id, formData, history);
   };
@@ -56,17 +61,23 @@ const EditCampaign = ({
       completionDate:
         !loading && campaign.completionDate
           ? campaign.completionDate.split('T')[0]
-          : ''
+          : '',
     });
+
+    toggleSideNav(windowWidth >= 576);
     // eslint-disable-next-line
-  }, [getCampaignById, loading]);
+  }, [getCampaignById, loading, toggleSideNav]);
 
   return (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />
 
-        <div className={styles.content}>
+        <div
+          className={`${styles.content} ${
+            !displaySideNav ? styles.side_nav_hidden : ''
+          }`}
+        >
           <Alert />
           <div className={styles.heading}>
             <i className='fas fa-user'></i> Edit Campaign
@@ -74,13 +85,13 @@ const EditCampaign = ({
           <div className={styles.sub_heading}>
             Fill in the following information to edit your campaign
           </div>
-          <Form onSubmit={e => onSubmit(e)}>
+          <Form onSubmit={(e) => onSubmit(e)}>
             <Form.Group>
               <Form.Control
                 as='select'
                 name='category'
                 value={category}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               >
                 <option value=''>Please select campaign category</option>
                 <option value='1'>Technology</option>
@@ -100,7 +111,7 @@ const EditCampaign = ({
                 placeholder='Campaign title'
                 name='title'
                 value={title}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
             <Form.Group>
@@ -110,7 +121,7 @@ const EditCampaign = ({
                 placeholder='Campaign description'
                 name='description'
                 value={description}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
             <Form.Group>
@@ -119,7 +130,7 @@ const EditCampaign = ({
                 placeholder='Required funds'
                 name='fundsRequired'
                 value={fundsRequired}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
             <Form.Group>
@@ -128,7 +139,7 @@ const EditCampaign = ({
                 type='date'
                 name='completionDate'
                 value={completionDate}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
             <Button
@@ -157,14 +168,19 @@ const EditCampaign = ({
 EditCampaign.propTypes = {
   getCampaignById: PropTypes.func.isRequired,
   campaign: PropTypes.object.isRequired,
-  updateCampaign: PropTypes.func.isRequired
+  updateCampaign: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
+  windowWidth: PropTypes.number.isRequired,
 };
 
-const mapStateToProps = state => ({
-  campaign: state.campaign
+const mapStateToProps = (state) => ({
+  campaign: state.campaign,
+  auth: state.auth,
 });
 
 export default connect(mapStateToProps, {
   getCampaignById,
-  updateCampaign
-})(withRouter(EditCampaign));
+  updateCampaign,
+  toggleSideNav,
+})(withRouter(windowSize(EditCampaign)));

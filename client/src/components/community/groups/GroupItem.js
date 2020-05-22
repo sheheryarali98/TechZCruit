@@ -9,7 +9,7 @@ import placeholder from '../../../img/placeholder.png';
 const GroupItem = ({ group, auth, sendJoinRequest, styles }) => {
   return (
     <Fragment>
-      <Col md={3}>
+      <Col xs={12} md={4} lg={3}>
         <Card className={styles.card}>
           <Card.Img src={placeholder} />
           <Card.Body>
@@ -31,17 +31,19 @@ const GroupItem = ({ group, auth, sendJoinRequest, styles }) => {
           {auth.user !== null &&
             group.admin !== auth.user._id &&
             group.requests
-              .map(request => request.user)
+              .map((request) => request.user)
               .indexOf(auth.user._id) === -1 &&
-            group.members.map(member => member.user).indexOf(auth.user._id) ===
-              -1 && (
-              <Card.Footer>
+            group.members
+              .map((member) => member.user)
+              .indexOf(auth.user._id) === -1 && (
+              <Card.Footer style={{ padding: '0.5rem 1rem' }}>
                 <Button
                   variant='dark'
                   className='my-2'
+                  style={{ width: '100%' }}
                   onClick={() => sendJoinRequest(group._id)}
                 >
-                  <i className='far fa-envelope'></i> Send Join Request
+                  <i className='far fa-envelope'></i> Join
                 </Button>
               </Card.Footer>
             )}
@@ -55,9 +57,9 @@ GroupItem.propTypes = {
   group: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired,
   sendJoinRequest: PropTypes.func.isRequired,
-  styles: PropTypes.object.isRequired
+  styles: PropTypes.object.isRequired,
 };
 
 export default connect(null, {
-  sendJoinRequest
+  sendJoinRequest,
 })(GroupItem);

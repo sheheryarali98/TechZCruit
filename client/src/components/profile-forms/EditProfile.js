@@ -8,12 +8,17 @@ import Alert from '../layout/Alert';
 import { Form, Button } from 'react-bootstrap';
 import Footer from '../layout/Footer';
 import styles from '../../css/profile-forms/style.module.css';
+import { toggleSideNav } from '../../actions/auth';
+import windowSize from 'react-window-size';
 
 const EditProfile = ({
   createProfile,
   getCurrentProfile,
   history,
-  profile: { loading, profile }
+  profile: { loading, profile },
+  windowWidth,
+  auth: { displaySideNav },
+  toggleSideNav,
 }) => {
   const [formData, setFormData] = useState({
     status: '',
@@ -27,7 +32,7 @@ const EditProfile = ({
     twitter: '',
     linkedin: '',
     instagram: '',
-    youtube: ''
+    youtube: '',
   });
 
   const {
@@ -42,11 +47,13 @@ const EditProfile = ({
     twitter,
     linkedin,
     instagram,
-    youtube
+    youtube,
   } = formData;
 
   useEffect(() => {
     getCurrentProfile();
+
+    toggleSideNav(windowWidth >= 576);
 
     setFormData({
       status: !loading && profile.status ? profile.status : '',
@@ -66,10 +73,11 @@ const EditProfile = ({
       instagram:
         !loading && profile.socialLinks ? profile.socialLinks.instagram : '',
       youtube:
-        !loading && profile.socialLinks ? profile.socialLinks.youtube : ''
+        !loading && profile.socialLinks ? profile.socialLinks.youtube : '',
     });
+
     // eslint-disable-next-line
-  }, [loading, getCurrentProfile]);
+  }, [loading, getCurrentProfile.toggleSideNav]);
 
   const [displaySocialLinks, setDisplaySocialLinks] = useState(false);
 
@@ -77,11 +85,11 @@ const EditProfile = ({
     setDisplaySocialLinks(!displaySocialLinks);
   };
 
-  const onChange = e => {
+  const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const onSubmit = e => {
+  const onSubmit = (e) => {
     e.preventDefault();
     createProfile(formData, history, true);
   };
@@ -91,7 +99,11 @@ const EditProfile = ({
       <section className={styles.section}>
         <SideNav styles={styles} />
 
-        <div className={styles.content}>
+        <div
+          className={`${styles.content} ${
+            !displaySideNav ? styles.side_nav_hidden : ''
+          }`}
+        >
           <Alert />
           <div className={styles.heading}>
             <i className='fas fa-user'></i> Edit Profile
@@ -99,13 +111,13 @@ const EditProfile = ({
           <div className={styles.sub_heading}>
             Fill in the following information to edit your profile
           </div>
-          <Form onSubmit={e => onSubmit(e)}>
+          <Form onSubmit={(e) => onSubmit(e)}>
             <Form.Group>
               <Form.Control
                 as='select'
                 name='status'
                 value={status}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               >
                 <option value=''>Please select your professional status</option>
                 <option value='Developer'>Developer</option>
@@ -125,7 +137,7 @@ const EditProfile = ({
                 placeholder='Company'
                 name='company'
                 value={company}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
               <Form.Text className='text-muted'>
                 This can be your own company and also a company that you work
@@ -139,7 +151,7 @@ const EditProfile = ({
                 placeholder='Website'
                 name='website'
                 value={website}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
               <Form.Text className='text-muted'>
                 This is the webiste website where you showcase your work
@@ -152,7 +164,7 @@ const EditProfile = ({
                 placeholder='Location'
                 name='location'
                 value={location}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
               <Form.Text className='text-muted'>
                 This is your location where you live or work at
@@ -165,7 +177,7 @@ const EditProfile = ({
                 placeholder='Skills'
                 name='skills'
                 value={skills}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
               <Form.Text className='text-muted'>
                 Please enter your skills separated by commas such as HTML, CSS,
@@ -179,7 +191,7 @@ const EditProfile = ({
                 placeholder='GitHub username'
                 name='githubUsername'
                 value={githubUsername}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
               <Form.Text className='text-muted'>
                 Please enter your GitHub username
@@ -194,7 +206,7 @@ const EditProfile = ({
                 placeholder='A short bio about yourself'
                 name='bio'
                 value={bio}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               ></Form.Control>
               <Form.Text className='text-muted'>
                 Please enter some information so that people may get to know you
@@ -218,7 +230,7 @@ const EditProfile = ({
                     placeholder='Fabebook URL'
                     name='facebook'
                     value={facebook}
-                    onChange={e => onChange(e)}
+                    onChange={(e) => onChange(e)}
                   />
                 </div>
 
@@ -231,7 +243,7 @@ const EditProfile = ({
                     placeholder='Twitter URL'
                     name='twitter'
                     value={twitter}
-                    onChange={e => onChange(e)}
+                    onChange={(e) => onChange(e)}
                   />
                 </div>
 
@@ -244,7 +256,7 @@ const EditProfile = ({
                     placeholder='Linkedin URL'
                     name='linkedin'
                     value={linkedin}
-                    onChange={e => onChange(e)}
+                    onChange={(e) => onChange(e)}
                   />
                 </div>
 
@@ -257,7 +269,7 @@ const EditProfile = ({
                     placeholder='Instagram URL'
                     name='instagram'
                     value={instagram}
-                    onChange={e => onChange(e)}
+                    onChange={(e) => onChange(e)}
                   />
                 </div>
 
@@ -270,7 +282,7 @@ const EditProfile = ({
                     placeholder='Youtube URL'
                     name='youtube'
                     value={youtube}
-                    onChange={e => onChange(e)}
+                    onChange={(e) => onChange(e)}
                   />
                 </div>
               </Fragment>
@@ -301,13 +313,19 @@ const EditProfile = ({
 EditProfile.propTypes = {
   createProfile: PropTypes.func.isRequired,
   getCurrentProfile: PropTypes.func.isRequired,
-  profile: PropTypes.object.isRequired
+  profile: PropTypes.object.isRequired,
+  windowWidth: PropTypes.number.isRequired,
+  auth: PropTypes.object.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = state => ({
-  profile: state.profile
+const mapStateToProps = (state) => ({
+  profile: state.profile,
+  auth: state.auth,
 });
 
-export default connect(mapStateToProps, { createProfile, getCurrentProfile })(
-  withRouter(EditProfile)
-);
+export default connect(mapStateToProps, {
+  createProfile,
+  getCurrentProfile,
+  toggleSideNav,
+})(withRouter(windowSize(EditProfile)));

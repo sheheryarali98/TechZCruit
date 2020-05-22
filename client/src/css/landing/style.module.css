@@ -10,13 +10,13 @@
 
 .banner {
   width: 100%;
-  height: 60vh;
+  height: 25rem;
   background-image: linear-gradient(to right, #ff9a03, #e38b07);
 }
 
 .main_title {
   position: relative;
-  top: 18vh;
+  top: 8rem;
   text-align: center;
   font-size: 4rem;
   color: white;
@@ -25,10 +25,11 @@
 
 .description {
   position: relative;
-  top: 20vh;
+  top: 10rem;
   text-align: center;
   font-size: 1.6rem;
   color: white;
+  margin: 0 3rem;
   animation: description 1.3s 1;
 }
 
@@ -86,18 +87,36 @@
 
 @keyframes main-title {
   from {
-    top: 0;
+    top: -2rem;
   }
   to {
-    top: 18vh;
+    top: 8rem;
   }
 }
 
 @keyframes description {
   from {
-    top: 40vh;
+    top: 20rem;
   }
   to {
-    top: 20vh;
+    top: 10rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .main_title {
+    font-size: 3.1rem;
+  }
+
+  .description {
+    font-size: 1.25rem;
+  }
+
+  .banner {
+    height: 27rem;
+  }
+
+  .heading {
+    font-size: 1.35rem;
   }
 }

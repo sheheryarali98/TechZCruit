@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../../../middleware/auth');
 const { check, validationResult } = require('express-validator');
-const Product = require('../../../models/ecommerce/Product');
 const stripe = require('stripe')('sk_test_XlhQvFYUTZ4qdeqnN3X3RVTX00CoTYt5Sz');
+const auth = require('../../../middleware/auth');
+const Product = require('../../../models/ecommerce/Product');
 
 // @route   GET /api/ecommerce/products
 // @desc    Get all products

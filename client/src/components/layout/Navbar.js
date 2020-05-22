@@ -1,12 +1,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { logout } from '../../actions/auth';
-import { Navbar as CustomNavbar, Nav, NavDropdown } from 'react-bootstrap';
+import { logout, toggleSideNav } from '../../actions/auth';
+import {
+  Navbar as CustomNavbar,
+  Nav,
+  NavDropdown,
+  Button,
+} from 'react-bootstrap';
 
-const Navbar = ({ auth: { isAuthenticated, loading, user }, logout }) => {
+const Navbar = ({
+  auth: { isAuthenticated, loading, user, displaySideNav },
+  logout,
+  toggleSideNav,
+}) => {
   const authLinks = (
     <Nav className='ml-auto'>
+      <Nav.Link href='/my-conversations'>
+        <i className='fas fa-envelope'></i>
+      </Nav.Link>
       <NavDropdown
         title={
           <img
@@ -45,6 +57,11 @@ const Navbar = ({ auth: { isAuthenticated, loading, user }, logout }) => {
 
   return (
     <CustomNavbar bg='dark' expand='lg'>
+      {!loading && isAuthenticated && (
+        <Button onClick={() => toggleSideNav(!displaySideNav)}>
+          <i className='fas fa-bars'></i>
+        </Button>
+      )}
       <CustomNavbar.Brand href='/'>
         <i className='fab fa-connectdevelop'></i> TechZCruit
       </CustomNavbar.Brand>
@@ -58,11 +75,12 @@ const Navbar = ({ auth: { isAuthenticated, loading, user }, logout }) => {
 
 Navbar.propTypes = {
   auth: PropTypes.object.isRequired,
-  logout: PropTypes.func.isRequired
+  logout: PropTypes.func.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = state => ({
-  auth: state.auth
+const mapStateToProps = (state) => ({
+  auth: state.auth,
 });
 
-export default connect(mapStateToProps, { logout })(Navbar);
+export default connect(mapStateToProps, { logout, toggleSideNav })(Navbar);

@@ -5,16 +5,16 @@ import { Row, Col } from 'react-bootstrap';
 const UserInfo = ({ project, styles }) => {
   return (
     <Fragment>
-      <div className={styles.sub_heading}>Project owner</div>
+      <div className='lead mb-3 mt-1'>Project owner</div>
       <Row>
-        <Col md={12} style={{ textAlign: 'center' }}>
+        <Col xs={12} md={12} style={{ textAlign: 'center' }}>
           <img
             src={project !== null ? project.user.avatar : ''}
             alt=''
-            style={{ width: '200px', height: '200px' }}
+            style={{ width: '150px', height: '150px' }}
             className='round-img'
           />
-          <h3 className='text-primary mt-3'>
+          <h3 className={styles.sub_heading}>
             {project !== null ? project.user.name : ''}
           </h3>
         </Col>
@@ -25,7 +25,7 @@ const UserInfo = ({ project, styles }) => {
 
 UserInfo.propTypes = {
   project: PropTypes.object.isRequired,
-  styles: PropTypes.object.isRequired
+  styles: PropTypes.object.isRequired,
 };
 
 export default UserInfo;

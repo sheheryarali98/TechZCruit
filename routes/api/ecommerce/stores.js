@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../../../middleware/auth');
 const { check, validationResult } = require('express-validator');
+const auth = require('../../../middleware/auth');
 const Store = require('../../../models/ecommerce/Store');
 
 // @route   GET /api/ecommerce/stores

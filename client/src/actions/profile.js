@@ -1,17 +1,16 @@
+import axios from 'axios';
 import {
   PROFILE_LOADED,
-  PROFILE_ERROR,
-  CLEAR_PROFILE,
   EXPERIENCE_ADDED,
   EDUCATION_ADDED,
   EXPERIENCE_REMOVED,
   EDUCATION_REMOVED,
   PROFILE_DELETED,
+  CLEAR_PROFILE,
   USER_DELETED,
-  ALL_PROFILES_LOADED
+  PROFILE_ERROR
 } from './types';
 import { setAlert } from './alert';
-import axios from 'axios';
 
 // Get current profile
 export const getCurrentProfile = () => async dispatch => {
@@ -27,6 +26,24 @@ export const getCurrentProfile = () => async dispatch => {
       type: PROFILE_ERROR,
       payload: err.response.data
     });
+  }
+};
+
+// Get profile by id
+export const getProfileById = id => async dispatch => {
+  try {
+    const res = await axios.get(`/api/profiles/${id}`);
+
+    dispatch({
+      type: PROFILE_LOADED,
+      payload: res.data
+    });
+  } catch (err) {
+    dispatch({
+      type: PROFILE_ERROR
+    });
+
+    dispatch(setAlert('Error occured while loading profile', 'danger'));
   }
 };
 
@@ -158,43 +175,5 @@ export const deleteProfile = () => async dispatch => {
     dispatch({ type: USER_DELETED });
   } catch (err) {
     dispatch(setAlert('Error occurred while deleting account', 'danger'));
-  }
-};
-
-// Get all profiles
-export const getAllProfiles = () => async dispatch => {
-  try {
-    const res = await axios.get('/api/profiles');
-    console.log(res.data);
-
-    dispatch({
-      type: ALL_PROFILES_LOADED,
-      payload: res.data
-    });
-  } catch (err) {
-    console.log(err);
-    dispatch({
-      type: PROFILE_ERROR
-    });
-
-    dispatch(setAlert('Error occured while loading all profiles', 'danger'));
-  }
-};
-
-// Get profile by id
-export const getProfileById = id => async dispatch => {
-  try {
-    const res = await axios.get(`/api/profiles/${id}`);
-
-    dispatch({
-      type: PROFILE_LOADED,
-      payload: res.data
-    });
-  } catch (err) {
-    dispatch({
-      type: PROFILE_ERROR
-    });
-
-    dispatch(setAlert('Error occured while loading profile', 'danger'));
   }
 };

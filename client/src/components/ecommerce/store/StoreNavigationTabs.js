@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 const StoreNavigationTabs = ({
   store,
   product: { loading, products },
-  styles
+  styles,
 }) => {
   return (
     <Fragment>
@@ -33,8 +33,8 @@ const StoreNavigationTabs = ({
                 </div>
                 <Row className='mt-3'>
                   {!loading && products.length > 0 ? (
-                    products.map(product => (
-                      <Col md={3}>
+                    products.map((product) => (
+                      <Col xs={12} md={4} lg={3} key={product._id}>
                         <Card className={styles.card}>
                           <Card.Img src={placeholder} />
                           <Card.Body>
@@ -45,7 +45,7 @@ const StoreNavigationTabs = ({
                                 to={`/ecommerce/product/${product._id}`}
                                 style={{
                                   textDecoration: 'none',
-                                  color: 'inherit'
+                                  color: 'inherit',
                                 }}
                               >
                                 {product.title}
@@ -113,7 +113,7 @@ const StoreNavigationTabs = ({
 StoreNavigationTabs.propTypes = {
   store: PropTypes.object.isRequired,
   product: PropTypes.object.isRequired,
-  styles: PropTypes.object.isRequired
+  styles: PropTypes.object.isRequired,
 };
 
 export default StoreNavigationTabs;

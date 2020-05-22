@@ -9,7 +9,7 @@ const Experience = ({ styles, experiences, removeExperience }) => {
   return (
     <Fragment>
       <div className={styles.title}>Experience Credentials</div>
-      <Table striped>
+      <Table striped hover responsive>
         <thead>
           <tr>
             <th scope='col'>Company</th>
@@ -19,7 +19,7 @@ const Experience = ({ styles, experiences, removeExperience }) => {
           </tr>
         </thead>
         <tbody>
-          {experiences.map(experience => (
+          {experiences.map((experience) => (
             <tr key={experience._id}>
               <td>{experience.company}</td>
               <td>
@@ -51,7 +51,7 @@ const Experience = ({ styles, experiences, removeExperience }) => {
 Experience.propTypes = {
   experiences: PropTypes.array.isRequired,
   removeExperience: PropTypes.func.isRequired,
-  styles: PropTypes.object.isRequired
+  styles: PropTypes.object.isRequired,
 };
 
 export default connect(null, { removeExperience })(Experience);

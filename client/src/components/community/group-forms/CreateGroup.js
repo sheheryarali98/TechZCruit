@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
@@ -8,20 +8,33 @@ import styles from '../../../css/community/group-forms/style.module.css';
 import SideNav from '../../layout/SideNav';
 import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
+import { toggleSideNav } from '../../../actions/auth';
+import windowSize from 'react-window-size';
 
-const CreateGroup = ({ createGroup, history }) => {
+const CreateGroup = ({
+  createGroup,
+  history,
+  toggleSideNav,
+  windowWidth,
+  auth: { displaySideNav },
+}) => {
+  useEffect(() => {
+    toggleSideNav(windowWidth >= 576);
+    // eslint-disable-next-line
+  }, [toggleSideNav]);
+
   const [formData, setFormData] = useState({
     name: '',
-    description: ''
+    description: '',
   });
 
   const { name, description } = formData;
 
-  const onChange = e => {
+  const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const onSubmit = e => {
+  const onSubmit = (e) => {
     e.preventDefault();
     createGroup(formData, history);
   };
@@ -31,7 +44,11 @@ const CreateGroup = ({ createGroup, history }) => {
       <section className={styles.section}>
         <SideNav styles={styles} />
 
-        <div className={styles.content}>
+        <div
+          className={`${styles.content} ${
+            !displaySideNav ? styles.side_nav_hidden : ''
+          }`}
+        >
           <Alert />
           <div className={styles.heading}>
             <i className='fas fa-user'></i> Create Group
@@ -39,14 +56,14 @@ const CreateGroup = ({ createGroup, history }) => {
           <div className={styles.sub_heading}>
             Fill in the following information to create a new group
           </div>
-          <Form onSubmit={e => onSubmit(e)}>
+          <Form onSubmit={(e) => onSubmit(e)}>
             <Form.Group>
               <Form.Control
                 type='text'
                 placeholder='Name'
                 name='name'
                 value={name}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
             <Form.Group>
@@ -56,7 +73,7 @@ const CreateGroup = ({ createGroup, history }) => {
                 placeholder='Description'
                 name='description'
                 value={description}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
             <Button
@@ -83,9 +100,17 @@ const CreateGroup = ({ createGroup, history }) => {
 };
 
 CreateGroup.propTypes = {
-  createGroup: PropTypes.func.isRequired
+  createGroup: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
+  windowWidth: PropTypes.number.isRequired,
 };
 
-export default connect(null, {
-  createGroup
-})(withRouter(CreateGroup));
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+});
+
+export default connect(mapStateToProps, {
+  createGroup,
+  toggleSideNav,
+})(withRouter(windowSize(CreateGroup)));

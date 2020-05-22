@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
@@ -8,14 +8,27 @@ import styles from '../../../css/crowdfunding/campaign-forms/style.module.css';
 import SideNav from '../../layout/SideNav';
 import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
+import { toggleSideNav } from '../../../actions/auth';
+import windowSize from 'react-window-size';
 
-const CreateCampaign = ({ createCampaign, history }) => {
+const CreateCampaign = ({
+  createCampaign,
+  history,
+  toggleSideNav,
+  windowWidth,
+  auth: { displaySideNav },
+}) => {
+  useEffect(() => {
+    toggleSideNav(windowWidth >= 576);
+    // eslint-disable-next-line
+  }, [toggleSideNav]);
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     category: '',
     fundsRequired: '',
-    completionDate: ''
+    completionDate: '',
   });
 
   const {
@@ -23,14 +36,14 @@ const CreateCampaign = ({ createCampaign, history }) => {
     description,
     category,
     fundsRequired,
-    completionDate
+    completionDate,
   } = formData;
 
-  const onChange = e => {
+  const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const onSubmit = e => {
+  const onSubmit = (e) => {
     e.preventDefault();
     createCampaign(formData, history);
   };
@@ -40,7 +53,11 @@ const CreateCampaign = ({ createCampaign, history }) => {
       <section className={styles.section}>
         <SideNav styles={styles} />
 
-        <div className={styles.content}>
+        <div
+          className={`${styles.content} ${
+            !displaySideNav ? styles.side_nav_hidden : ''
+          }`}
+        >
           <Alert />
           <div className={styles.heading}>
             <i className='fas fa-user'></i> Create Campaign
@@ -48,13 +65,13 @@ const CreateCampaign = ({ createCampaign, history }) => {
           <div className={styles.sub_heading}>
             Fill in the following information to setup your campaign
           </div>
-          <Form onSubmit={e => onSubmit(e)}>
+          <Form onSubmit={(e) => onSubmit(e)}>
             <Form.Group>
               <Form.Control
                 as='select'
                 name='category'
                 value={category}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               >
                 <option value=''>Please select campaign category</option>
                 <option value='1'>Technology</option>
@@ -74,7 +91,7 @@ const CreateCampaign = ({ createCampaign, history }) => {
                 placeholder='Campaign title'
                 name='title'
                 value={title}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
             <Form.Group>
@@ -84,7 +101,7 @@ const CreateCampaign = ({ createCampaign, history }) => {
                 placeholder='Campaign description'
                 name='description'
                 value={description}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
             <Form.Group>
@@ -93,7 +110,7 @@ const CreateCampaign = ({ createCampaign, history }) => {
                 placeholder='Required funds'
                 name='fundsRequired'
                 value={fundsRequired}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
             <Form.Group>
@@ -102,7 +119,7 @@ const CreateCampaign = ({ createCampaign, history }) => {
                 type='date'
                 name='completionDate'
                 value={completionDate}
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
             <Button
@@ -129,9 +146,17 @@ const CreateCampaign = ({ createCampaign, history }) => {
 };
 
 CreateCampaign.propTypes = {
-  createCampaign: PropTypes.func.isRequired
+  createCampaign: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
+  windowWidth: PropTypes.number.isRequired,
 };
 
-export default connect(null, {
-  createCampaign
-})(withRouter(CreateCampaign));
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+});
+
+export default connect(mapStateToProps, {
+  createCampaign,
+  toggleSideNav,
+})(withRouter(windowSize(CreateCampaign)));

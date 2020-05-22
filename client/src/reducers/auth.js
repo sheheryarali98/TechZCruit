@@ -10,17 +10,19 @@ import {
   PASSWORD_UPDATED,
   NAME_UPDATED,
   PROFILE_PICTURE_UPLOADED,
-  PROFILE_PICTURE_REMOVED
+  PROFILE_PICTURE_REMOVED,
+  SIDE_NAV_TOGGLED,
 } from '../actions/types';
 
 const initialState = {
   token: localStorage.getItem('token'),
   isAuthenticated: null,
   loading: true,
-  user: null
+  user: null,
+  displaySideNav: true,
 };
 
-export default function(state = initialState, action) {
+export default function (state = initialState, action) {
   const { type, payload } = action;
 
   switch (type) {
@@ -29,7 +31,7 @@ export default function(state = initialState, action) {
         ...state,
         user: payload,
         isAuthenticated: true,
-        loading: false
+        loading: false,
       };
     case REGISTER_SUCCESS:
     case LOGIN_SUCCESS:
@@ -38,7 +40,7 @@ export default function(state = initialState, action) {
         ...state,
         ...payload,
         isAuthenticated: true,
-        loading: false
+        loading: false,
       };
     case REGISTER_FAILED:
     case AUTH_ERROR:
@@ -51,14 +53,19 @@ export default function(state = initialState, action) {
         token: null,
         isAuthenticated: false,
         loading: false,
-        user: null
+        user: null,
       };
     case PROFILE_PICTURE_UPLOADED:
     case PROFILE_PICTURE_REMOVED:
       return {
         ...state,
         loading: false,
-        user: { ...state.user, avatar: payload }
+        user: { ...state.user, avatar: payload },
+      };
+    case SIDE_NAV_TOGGLED:
+      return {
+        ...state,
+        displaySideNav: payload,
       };
     case PASSWORD_UPDATED:
     case NAME_UPDATED:

@@ -11,6 +11,7 @@ const GroupMembers = ({ group, auth, styles }) => {
           isAdmin={true}
           auth={auth}
           styles={styles}
+          group={group}
         />
       ) : (
         'No members found'

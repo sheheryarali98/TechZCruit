@@ -10,11 +10,23 @@ import SideNav from '../../layout/SideNav';
 import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
 import styles from '../../../css/community/group/style.module.css';
+import { toggleSideNav } from '../../../actions/auth';
+import windowSize from 'react-window-size';
 
-const Post = ({ post: { post, loading }, getPostById, match, auth }) => {
+const Post = ({
+  post: { post, loading },
+  getPostById,
+  match,
+  auth,
+  toggleSideNav,
+  windowWidth,
+}) => {
   useEffect(() => {
     getPostById(match.params.id);
-  }, [getPostById, match.params.id]);
+
+    toggleSideNav(windowWidth >= 576);
+    // eslint-disable-next-line
+  }, [getPostById, match.params.id, toggleSideNav]);
 
   return (
     <Fragment>
@@ -23,20 +35,26 @@ const Post = ({ post: { post, loading }, getPostById, match, auth }) => {
           <section className={styles.section}>
             <SideNav styles={styles} />
 
-            <div className={styles.content}>
+            <div
+              className={`${styles.content} ${
+                !auth.displaySideNav ? styles.side_nav_hidden : ''
+              }`}
+            >
               <Alert />
               <Row className={styles.list_item}>
-                <Col md={2}>
+                <Col xs={12} md={3}>
                   <Link to={`/profile/${post.user._id}`}>
                     <img src={post.user.avatar} alt='' className='round-img' />
                     <div className={styles.user_name}>{post.user.name}</div>
                   </Link>
                 </Col>
-                <Col md={10}>{post.description}</Col>
+                <Col xs={12} md={9}>
+                  {post.description}
+                </Col>
               </Row>
               <CommentForm post={post} />
               {post.comments.length > 0 ? (
-                post.comments.map(comment => (
+                post.comments.map((comment) => (
                   <div key={comment._id}>
                     <CommentItem
                       comment={comment}
@@ -62,14 +80,17 @@ const Post = ({ post: { post, loading }, getPostById, match, auth }) => {
 Post.propTypes = {
   post: PropTypes.object.isRequired,
   getPostById: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired
+  auth: PropTypes.object.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
+  windowWidth: PropTypes.number.isRequired,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   post: state.post,
-  auth: state.auth
+  auth: state.auth,
 });
 
 export default connect(mapStateToProps, {
-  getPostById
-})(Post);
+  getPostById,
+  toggleSideNav,
+})(windowSize(Post));

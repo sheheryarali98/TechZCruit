@@ -2,7 +2,7 @@ import React, { Fragment, useEffect } from 'react';
 import { connect } from 'react-redux';
 import {
   getGroupById,
-  removeMemberFromGroup
+  removeMemberFromGroup,
 } from '../../../actions/community/group';
 import PropTypes from 'prop-types';
 import GroupNavigationTabs from './GroupNavigationTabs';
@@ -11,6 +11,8 @@ import styles from '../../../css/community/group/style.module.css';
 import SideNav from '../../layout/SideNav';
 import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
+import { toggleSideNav } from '../../../actions/auth';
+import windowSize from 'react-window-size';
 
 const Group = ({
   getGroupById,
@@ -18,18 +20,27 @@ const Group = ({
   group: { loading, group },
   auth,
   removeMemberFromGroup,
-  post
+  post,
+  toggleSideNav,
+  windowWidth,
 }) => {
   useEffect(() => {
     getGroupById(match.params.id);
-  }, [getGroupById, match.params.id]);
+
+    toggleSideNav(windowWidth >= 576);
+    // eslint-disable-next-line
+  }, [getGroupById, match.params.id, toggleSideNav]);
 
   return (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />
 
-        <div className={styles.content}>
+        <div
+          className={`${styles.content} ${
+            !auth.displaySideNav ? styles.side_nav_hidden : ''
+          }`}
+        >
           <Alert />
           <div className={styles.heading}>
             {!loading && group !== null ? group.name : ''}
@@ -43,7 +54,7 @@ const Group = ({
               group !== null &&
               group.admin._id !== auth.user._id &&
               group.members
-                .map(member => member.user._id)
+                .map((member) => member.user._id)
                 .indexOf(auth.user._id) > -1 && (
                 <div>
                   <Button
@@ -79,16 +90,19 @@ Group.propTypes = {
   group: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired,
   removeMemberFromGroup: PropTypes.func.isRequired,
-  post: PropTypes.object.isRequired
+  post: PropTypes.object.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
+  windowWidth: PropTypes.number.isRequired,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   group: state.group,
   auth: state.auth,
-  post: state.post
+  post: state.post,
 });
 
 export default connect(mapStateToProps, {
   getGroupById,
-  removeMemberFromGroup
-})(Group);
+  removeMemberFromGroup,
+  toggleSideNav,
+})(windowSize(Group));

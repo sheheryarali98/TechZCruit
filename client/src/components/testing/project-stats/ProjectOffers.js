@@ -5,7 +5,7 @@ import { Row, Col, Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import {
   deleteOfferForProject,
-  addTesterToProject
+  addTesterToProject,
 } from '../../../actions/testing/project';
 import { injectStripe } from 'react-stripe-elements';
 
@@ -14,18 +14,18 @@ const ProjectOffers = ({
   deleteOfferForProject,
   addTesterToProject,
   styles,
-  stripe
+  stripe,
 }) => {
   return (
     <Fragment>
-      {offers.map(offer => (
+      {offers.map((offer) => (
         <Row className={styles.list_item}>
-          <Col md={2}>
+          <Col xs={12} md={3}>
             <Link to={`/profile/${offer.user._id}`}>
               <img src={offer.user.avatar} alt='' className='round-img' />
             </Link>
           </Col>
-          <Col md={10}>
+          <Col xs={12} md={9}>
             <h2>{offer.user.name}</h2>
             <div>
               <strong>Amount: </strong>${offer.amount}
@@ -35,7 +35,7 @@ const ProjectOffers = ({
                 variant='success'
                 onClick={() => {
                   stripe.confirmCardPayment(offer.clientSecret, {
-                    payment_method: offer.paymentMethodId
+                    payment_method: offer.paymentMethodId,
                   });
 
                   addTesterToProject(_id, offer.user._id);
@@ -63,10 +63,10 @@ ProjectOffers.propTypes = {
   deleteOfferForProject: PropTypes.func.isRequired,
   addTesterToProject: PropTypes.func.isRequired,
   styles: PropTypes.object.isRequired,
-  stripe: PropTypes.object.isRequired
+  stripe: PropTypes.object.isRequired,
 };
 
 export default connect(null, {
   deleteOfferForProject,
-  addTesterToProject
+  addTesterToProject,
 })(injectStripe(ProjectOffers));

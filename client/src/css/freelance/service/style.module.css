@@ -1,0 +1,253 @@
+.side_nav {
+  height: 100%;
+  width: 230px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgb(44, 44, 44);
+  overflow-x: hidden;
+  color: white;
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+  padding-right: 0.7rem;
+  padding-left: 0.7rem;
+  z-index: 1;
+}
+
+.side_nav::-webkit-scrollbar {
+  display: none;
+}
+
+.side_nav a {
+  text-decoration: none;
+  color: white;
+  font-size: 1rem;
+  display: block;
+  padding: 0.5rem;
+  border-radius: 10px;
+  margin-left: 1.1rem;
+}
+
+.side_nav a:hover {
+  background: rgb(27, 27, 27);
+}
+
+.side_nav_heading {
+  color: white;
+  font-size: 1.2rem;
+  display: block;
+  padding: 0.8rem;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+.section {
+  min-height: 100%;
+  margin-bottom: -70px;
+}
+
+.section::after {
+  content: '';
+  display: block;
+}
+
+.content {
+  margin-left: 230px;
+  padding-top: 6rem;
+  padding-bottom: 3rem;
+  padding-left: 2.5rem;
+  padding-right: 2.5rem;
+}
+
+.content > div:nth-child(3) > div:nth-child(2) > div:nth-child(1) ~ div button {
+  width: 100%;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.side_nav_hidden {
+  margin-left: 0;
+}
+
+.heading {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.heading i {
+  font-size: 3rem;
+}
+
+.sub_heading {
+  font-size: 1.8rem;
+  margin: 0.8rem 0;
+}
+
+.btn_primary {
+  background: #ff9a03;
+  border-color: transparent;
+  color: white;
+  margin-right: 1rem;
+}
+
+.btn_primary:hover {
+  background: #e38b07;
+  border-color: transparent;
+}
+
+.btn_primary:focus {
+  box-shadow: none;
+}
+
+.btn_primary:active {
+  background: #e38b07 !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
+
+.list_item {
+  background: rgb(218, 218, 218);
+  padding: 1rem;
+  margin-top: 0.8rem;
+  margin-right: 0.1rem;
+  margin-left: 0.1rem;
+}
+
+.list_item > div:first-child {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.list_item img {
+  width: 100px;
+  height: 100px;
+}
+
+.list_item a:first-child {
+  text-decoration: none;
+  color: black;
+  text-align: center;
+}
+
+.user_name {
+  font-size: 1.3rem;
+  text-align: center;
+  margin: 0.5rem 0;
+}
+
+.list_item > div:nth-child(2) {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.list_item > div:nth-child(2) button {
+  margin-right: 0.3rem;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+}
+
+.footer,
+section::after {
+  height: 70px;
+}
+
+.footer {
+  text-align: center;
+  width: 100%;
+  background: rgb(44, 44, 44);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-top: solid 1px white;
+}
+
+.rating,
+.rating_review {
+  transform: rotateY(180deg);
+  width: 200px;
+  margin: 0;
+}
+
+.rating label,
+.rating_review label {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.rating input,
+.rating_review input {
+  display: none;
+}
+
+.rating div,
+.rating_review div {
+  margin: 0;
+}
+
+.rating i {
+  color: transparent;
+  font-size: 30px;
+  cursor: pointer;
+  -webkit-text-stroke-width: 3px;
+  -webkit-text-stroke-color: #e38b07;
+  transition-duration: 500ms;
+}
+
+.rating_review i {
+  color: transparent;
+  font-size: 30px;
+  -webkit-text-stroke-width: 3px;
+  -webkit-text-stroke-color: #e38b07;
+}
+
+.rating input:checked ~ label i,
+.rating > div[class*='checked'] i,
+.rating > div[class*='checked'] ~ div i,
+.rating_review input:checked ~ label i,
+.rating_review > div[class*='checked'] i,
+.rating_review > div[class*='checked'] ~ div i,
+.rating div:hover i,
+.rating div:hover ~ div i {
+  color: #e38b07;
+}
+
+@media (max-width: 768px) {
+  .list_item > div:nth-child(2) button {
+    margin-right: 0;
+    margin-bottom: 0.4rem;
+    display: block;
+    width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .content {
+    margin-left: 0;
+    padding-left: 1.3rem;
+    padding-right: 1.3rem;
+  }
+
+  .heading,
+  .heading i {
+    font-size: 2rem;
+  }
+
+  .sub_heading {
+    font-size: 1.5rem;
+  }
+
+  .list_item > div:nth-child(2) {
+    text-align: center;
+  }
+}

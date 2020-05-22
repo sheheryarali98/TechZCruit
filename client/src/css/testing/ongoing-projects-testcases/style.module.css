@@ -11,6 +11,7 @@
   padding-bottom: 5rem;
   padding-right: 0.7rem;
   padding-left: 0.7rem;
+  z-index: 1;
 }
 
 .side_nav::-webkit-scrollbar {
@@ -58,6 +59,14 @@
   padding-right: 2.5rem;
 }
 
+.hidden {
+  visibility: hidden;
+}
+
+.side_nav_hidden {
+  margin-left: 0;
+}
+
 .heading {
   font-size: 3rem;
   font-weight: bold;
@@ -70,87 +79,6 @@
 .sub_heading {
   font-size: 1.8rem;
   margin: 0.8rem 0;
-}
-
-.title {
-  font-size: 1.3rem;
-  margin: 1rem 0;
-}
-
-.btn_primary {
-  background: #ff9a03;
-  border-color: transparent;
-  color: white;
-  margin-right: 1rem;
-}
-
-.btn_primary:hover {
-  background: #e38b07;
-  border-color: transparent;
-}
-
-.btn_primary:focus {
-  box-shadow: none;
-}
-
-.btn_primary:active {
-  background: #e38b07 !important;
-  box-shadow: none !important;
-  border-color: transparent !important;
-}
-
-.dash_buttons {
-  display: flex;
-  margin-top: 1rem;
-}
-
-.form-text {
-  text-align: center;
-  margin-top: 2rem;
-}
-
-.form-text a {
-  font-size: inherit;
-}
-
-.card {
-  transition-duration: 300ms;
-}
-
-.card:hover {
-  transform: scale(1.1);
-  box-shadow: 2px 2px rgb(177, 177, 177);
-}
-
-.card_title a {
-  font-size: 1.3rem;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.list_item {
-  background: rgb(218, 218, 218);
-  padding: 1rem;
-  margin-top: 0.8rem;
-}
-
-.group_name {
-  text-decoration: none;
-  color: black;
-  font-size: 2rem;
-}
-
-.group_name:hover {
-  text-decoration: none;
-  color: black;
-}
-
-.list_item button {
-  margin-right: 0.3rem;
-}
-
-.list_item a {
-  margin-right: 0.3rem;
 }
 
 .footer,
@@ -167,4 +95,21 @@ section::after {
   flex-direction: column;
   justify-content: center;
   border-top: solid 1px white;
+}
+
+@media (max-width: 576px) {
+  .content {
+    margin-left: 0;
+    padding-left: 1.3rem;
+    padding-right: 1.3rem;
+  }
+
+  .heading,
+  .heading i {
+    font-size: 2rem;
+  }
+
+  .sub_heading {
+    font-size: 1.5rem;
+  }
 }

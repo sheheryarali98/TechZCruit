@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { reviewOnProduct } from '../../../actions/ecommerce/product';
 import { Form, Button } from 'react-bootstrap';
 
-const CommentForm = ({ product: { _id }, reviewOnProduct, styles }) => {
+const ReviewForm = ({ product: { _id }, reviewOnProduct, styles }) => {
   const [formData, setFormData] = useState({
     description: '',
     rating: ''
@@ -48,7 +48,7 @@ const CommentForm = ({ product: { _id }, reviewOnProduct, styles }) => {
               checked={rating === 5}
             />
             <Form.Check.Label onClick={() => setRating(5)}>
-              <i class='fas fa-star'></i>
+              <i className='fas fa-star'></i>
             </Form.Check.Label>
           </Form.Check>
 
@@ -63,7 +63,7 @@ const CommentForm = ({ product: { _id }, reviewOnProduct, styles }) => {
               checked={rating === 4}
             />
             <Form.Check.Label onClick={() => setRating(4)}>
-              <i class='fas fa-star'></i>
+              <i className='fas fa-star'></i>
             </Form.Check.Label>
           </Form.Check>
 
@@ -78,7 +78,7 @@ const CommentForm = ({ product: { _id }, reviewOnProduct, styles }) => {
               checked={rating === 3}
             />
             <Form.Check.Label onClick={() => setRating(3)}>
-              <i class='fas fa-star'></i>
+              <i className='fas fa-star'></i>
             </Form.Check.Label>
           </Form.Check>
 
@@ -93,7 +93,7 @@ const CommentForm = ({ product: { _id }, reviewOnProduct, styles }) => {
               checked={rating === 2}
             />
             <Form.Check.Label onClick={() => setRating(2)}>
-              <i class='fas fa-star'></i>
+              <i className='fas fa-star'></i>
             </Form.Check.Label>
           </Form.Check>
 
@@ -108,7 +108,7 @@ const CommentForm = ({ product: { _id }, reviewOnProduct, styles }) => {
               checked={rating === 1}
             />
             <Form.Check.Label onClick={() => setRating(1)}>
-              <i class='fas fa-star'></i>
+              <i className='fas fa-star'></i>
             </Form.Check.Label>
           </Form.Check>
         </Form.Group>
@@ -131,7 +131,7 @@ const CommentForm = ({ product: { _id }, reviewOnProduct, styles }) => {
   );
 };
 
-CommentForm.propTypes = {
+ReviewForm.propTypes = {
   product: PropTypes.object.isRequired,
   reviewOnProduct: PropTypes.func.isRequired,
   styles: PropTypes.object.isRequired
@@ -139,4 +139,4 @@ CommentForm.propTypes = {
 
 export default connect(null, {
   reviewOnProduct
-})(CommentForm);
+})(ReviewForm);

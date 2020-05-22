@@ -7,9 +7,9 @@ import ReviewItem from './ReviewItem';
 const ProductNavigationTabs = ({ product, auth, styles }) => {
   return (
     <Fragment>
-      <Tab.Container defaultActiveKey='reviews'>
+      <Tab.Container defaultActiveKey='description'>
         <Row>
-          <Col md={12}>
+          <Col xs={12} md={12}>
             <Nav justify variant='tabs'>
               <Nav.Item>
                 <Nav.Link eventKey='description'>Description</Nav.Link>
@@ -21,7 +21,7 @@ const ProductNavigationTabs = ({ product, auth, styles }) => {
           </Col>
         </Row>
         <Row>
-          <Col md={12}>
+          <Col xs={12} md={12}>
             <Tab.Content>
               <Tab.Pane eventKey='description'>
                 <div className='mt-3'>
@@ -33,7 +33,7 @@ const ProductNavigationTabs = ({ product, auth, styles }) => {
                   <ReviewForm product={product} styles={styles} />
                 )}
                 {product !== null && product.reviews.length > 0 ? (
-                  product.reviews.map(review => (
+                  product.reviews.map((review) => (
                     <ReviewItem
                       review={review}
                       auth={auth}
@@ -56,7 +56,7 @@ const ProductNavigationTabs = ({ product, auth, styles }) => {
 ProductNavigationTabs.propTypes = {
   product: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired,
-  styles: PropTypes.object.isRequired
+  styles: PropTypes.object.isRequired,
 };
 
 export default ProductNavigationTabs;

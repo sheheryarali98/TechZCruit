@@ -4,34 +4,42 @@ import { Form, Row, Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import {
   getAllProducts,
-  searchProduct
+  searchProduct,
 } from '../../../actions/ecommerce/product';
 import ProductItem from './ProductItem';
 import styles from '../../../css/ecommerce/products/style.module.css';
 import SideNav from '../../layout/SideNav';
 import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
+import { toggleSideNav } from '../../../actions/auth';
+import windowSize from 'react-window-size';
 
 const Products = ({
   getAllProducts,
   product: { loading, products },
-  searchProduct
+  searchProduct,
+  toggleSideNav,
+  windowWidth,
+  auth: { displaySideNav },
 }) => {
   useEffect(() => {
     getAllProducts();
-  }, [getAllProducts]);
+
+    toggleSideNav(windowWidth >= 576);
+    // eslint-disable-next-line
+  }, [getAllProducts, toggleSideNav]);
 
   const [formData, setFormData] = useState({
-    description: ''
+    description: '',
   });
 
   const { description } = formData;
 
-  const onChange = e => {
+  const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const onSubmit = e => {
+  const onSubmit = (e) => {
     e.preventDefault();
     if (description === '') {
       getAllProducts();
@@ -45,7 +53,11 @@ const Products = ({
       <section className={styles.section}>
         <SideNav styles={styles} />
 
-        <div className={styles.content}>
+        <div
+          className={`${styles.content} ${
+            !displaySideNav ? styles.side_nav_hidden : ''
+          }`}
+        >
           <Alert />
           <div className={styles.heading}>
             <i className='fas fa-user'></i> Products
@@ -53,14 +65,14 @@ const Products = ({
           <div className={styles.sub_heading}>
             Below is a list of all the products
           </div>
-          <Form onSubmit={e => onSubmit(e)}>
+          <Form onSubmit={(e) => onSubmit(e)}>
             <Form.Group>
               <Form.Control
                 type='text'
                 name='description'
                 value={description}
                 placeholder='Search products'
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
             <Form.Group>
@@ -69,7 +81,7 @@ const Products = ({
           </Form>
           <Row>
             {!loading && products.length > 0 ? (
-              products.map(product => (
+              products.map((product) => (
                 <ProductItem
                   key={product._id}
                   product={product}
@@ -91,14 +103,19 @@ const Products = ({
 Products.propTypes = {
   getAllProducts: PropTypes.func.isRequired,
   product: PropTypes.object.isRequired,
-  searchProduct: PropTypes.func.isRequired
+  searchProduct: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
+  windowWidth: PropTypes.number.isRequired,
 };
 
-const mapStateToProps = state => ({
-  product: state.product
+const mapStateToProps = (state) => ({
+  product: state.product,
+  auth: state.auth,
 });
 
 export default connect(mapStateToProps, {
   getAllProducts,
-  searchProduct
-})(Products);
+  searchProduct,
+  toggleSideNav,
+})(windowSize(Products));

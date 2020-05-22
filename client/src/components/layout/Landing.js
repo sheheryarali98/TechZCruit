@@ -1,8 +1,8 @@
 import React, { Fragment } from 'react';
 import { Link } from 'react-router-dom';
-import styles from '../../css/landing/style.module.css';
 import { Row, Col } from 'react-bootstrap';
 import Footer from './Footer';
+import styles from '../../css/landing/style.module.css';
 
 const Landing = () => {
   return (
@@ -20,7 +20,7 @@ const Landing = () => {
         <div className={styles.services}>
           <div className={styles.heading}>OUR SERVICES</div>
           <Row className={styles.row}>
-            <Col md={5} className={styles.service}>
+            <Col xs={12} md={5} className={styles.service}>
               <div>
                 <i className='fas fa-users fa-2x'></i>
               </div>
@@ -34,7 +34,7 @@ const Landing = () => {
                 reiciendis quos necessitatibus magni at optio officia.
               </div>
             </Col>
-            <Col md={5} className={styles.service}>
+            <Col xs={12} md={5} className={styles.service}>
               <div>
                 <i className='fab fa-think-peaks fa-2x'></i>
               </div>
@@ -48,7 +48,7 @@ const Landing = () => {
                 laboriosam ea exercitationem ullam voluptas quas soluta dolores!
               </div>
             </Col>
-            <Col md={5} className={styles.service}>
+            <Col xs={12} md={5} className={styles.service}>
               <div>
                 <i className='fas fa-tasks fa-2x'></i>
               </div>
@@ -62,7 +62,7 @@ const Landing = () => {
                 reprehenderit quibusdam perspiciatis, eligendi hic quam!
               </div>
             </Col>
-            <Col md={5} className={styles.service}>
+            <Col xs={12} md={5} className={styles.service}>
               <div>
                 <i className='fas fa-shopping-cart fa-2x'></i>
               </div>
@@ -76,11 +76,13 @@ const Landing = () => {
                 asperiores quasi ducimus itaque?
               </div>
             </Col>
-            <Col md={5} className={styles.service}>
+            <Col xs={12} md={5} className={styles.service}>
               <div>
                 <i className='fas fa-wallet fa-2x'></i>
               </div>
-              <strong>Freelance Platform</strong>
+              <strong>
+                <Link to='/freelance'>Freelance Platform</Link>
+              </strong>
               <div>
                 Lorem ipsum dolor sit amet consectetur adipisicing elit.
                 Assumenda dolorum tenetur aliquid! Optio facere odio, sequi

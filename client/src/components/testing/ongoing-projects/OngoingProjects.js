@@ -7,21 +7,33 @@ import styles from '../../../css/testing/ongoing-projects/style.module.css';
 import SideNav from '../../layout/SideNav';
 import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
+import { toggleSideNav } from '../../../actions/auth';
+import windowSize from 'react-window-size';
 
 const OngoingProjects = ({
   project: { loading, projects },
-  getAllOngoingProjectsForCurrentUser
+  getAllOngoingProjectsForCurrentUser,
+  toggleSideNav,
+  windowWidth,
+  auth: { displaySideNav },
 }) => {
   useEffect(() => {
     getAllOngoingProjectsForCurrentUser();
-  }, [getAllOngoingProjectsForCurrentUser]);
+
+    toggleSideNav(windowWidth >= 576);
+    // eslint-disable-next-line
+  }, [getAllOngoingProjectsForCurrentUser, toggleSideNav]);
 
   return (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />
 
-        <div className={styles.content}>
+        <div
+          className={`${styles.content} ${
+            !displaySideNav ? styles.side_nav_hidden : ''
+          }`}
+        >
           <Alert />
           <div className={styles.heading}>
             <i className='fas fa-user'></i> Ongoing projects
@@ -30,7 +42,7 @@ const OngoingProjects = ({
             Below is a list of all the projects you have undertaken
           </p>
           {!loading && projects.length > 0 ? (
-            projects.map(project => (
+            projects.map((project) => (
               <OngoingProjectItem
                 key={project._id}
                 project={project}
@@ -50,13 +62,18 @@ const OngoingProjects = ({
 
 OngoingProjects.propTypes = {
   project: PropTypes.object.isRequired,
-  getAllOngoingProjectsForCurrentUser: PropTypes.func.isRequired
+  getAllOngoingProjectsForCurrentUser: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
+  windowWidth: PropTypes.number.isRequired,
 };
 
-const mapStateToProps = state => ({
-  project: state.project
+const mapStateToProps = (state) => ({
+  project: state.project,
+  auth: state.auth,
 });
 
 export default connect(mapStateToProps, {
-  getAllOngoingProjectsForCurrentUser
-})(OngoingProjects);
+  getAllOngoingProjectsForCurrentUser,
+  toggleSideNav,
+})(windowSize(OngoingProjects));

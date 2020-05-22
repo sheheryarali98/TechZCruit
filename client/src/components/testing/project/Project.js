@@ -13,20 +13,31 @@ import { StripeProvider, Elements } from 'react-stripe-elements';
 import CustomOfferFrom from './CustomOfferForm';
 import DefaultOfferForm from './DefaultOfferForm';
 import ProjectNavigationTabs from './ProjectNavigationTabs';
+import { createConversation } from '../../../actions/chat/conversation';
+import { withRouter } from 'react-router-dom';
+import { toggleSideNav } from '../../../actions/auth';
+import windowSize from 'react-window-size';
 
 const Project = ({
   project: { loading, project },
   getProjectById,
   match,
-  auth
+  auth,
+  createConversation,
+  history,
+  toggleSideNav,
+  windowWidth,
 }) => {
   useEffect(() => {
     getProjectById(match.params.id);
-  }, [getProjectById, match.params.id]);
+
+    toggleSideNav(windowWidth >= 576);
+    // eslint-disable-next-line
+  }, [getProjectById, match.params.id, toggleSideNav]);
 
   const [
     showCustomOfferPaymentModal,
-    setshowCustomOfferPaymentModal
+    setshowCustomOfferPaymentModal,
   ] = useState(false);
 
   const toggleCustomOfferPaymentModal = () => {
@@ -35,11 +46,20 @@ const Project = ({
 
   const [
     showDefaultOfferPaymentModal,
-    setShowDefaultOfferPaymentModal
+    setShowDefaultOfferPaymentModal,
   ] = useState(false);
 
   const toggleDefaultOfferPaymentModal = () => {
     setShowDefaultOfferPaymentModal(!showDefaultOfferPaymentModal);
+  };
+
+  const redirectToChat = async () => {
+    const conversationId = await createConversation(
+      auth.user._id,
+      project.user._id
+    );
+
+    history.push(`/conversation/${conversationId}`);
   };
 
   return (
@@ -47,9 +67,12 @@ const Project = ({
       <section className={styles.section}>
         <SideNav styles={styles} />
 
-        <div className={styles.content}>
+        <div
+          className={`${styles.content} ${
+            !auth.displaySideNav ? styles.side_nav_hidden : ''
+          }`}
+        >
           <Alert />
-
           <Modal
             show={showDefaultOfferPaymentModal}
             onHide={() => toggleDefaultOfferPaymentModal()}
@@ -91,14 +114,10 @@ const Project = ({
             {!loading && project !== null ? project.name : ''}
           </div>
           <Row className='my-3'>
-            <Col md={8}>
-              <img
-                src={placeholder}
-                alt=''
-                style={{ width: '100%', height: '500px' }}
-              />
+            <Col xs={12} md={8}>
+              <img src={placeholder} alt='' className={styles.image} />
             </Col>
-            <Col className='p-3' md={4}>
+            <Col className='p-3' xs={12} md={4}>
               <div>
                 <div>Amount being offered:</div>
                 <h3 className={styles.sub_heading}>
@@ -118,10 +137,10 @@ const Project = ({
                 project !== null &&
                 auth.user._id !== project.user._id &&
                 project.offers
-                  .map(offer => offer.user._id)
+                  .map((offer) => offer.user._id)
                   .indexOf(auth.user._id) === -1 &&
                 project.testers
-                  .map(tester => tester.user._id)
+                  .map((tester) => tester.user._id)
                   .indexOf(auth.user._id) === -1 && (
                   <Fragment>
                     {' '}
@@ -129,10 +148,7 @@ const Project = ({
                       <Button
                         variant='primary'
                         className={`mt-3 ${styles.btn_primary}`}
-                        onClick={() =>
-                          // sendOfferForProject(project._id, project.amount)
-                          toggleDefaultOfferPaymentModal()
-                        }
+                        onClick={() => toggleDefaultOfferPaymentModal()}
                       >
                         Accept offer
                       </Button>
@@ -148,17 +164,33 @@ const Project = ({
                     </div>
                   </Fragment>
                 )}
+              {!loading &&
+                auth.user !== null &&
+                project !== null &&
+                auth.user._id !== project.user._id && (
+                  <Fragment>
+                    <div>
+                      <Button
+                        variant='dark'
+                        className='mt-3'
+                        onClick={() => redirectToChat()}
+                      >
+                        Chat with owner
+                      </Button>
+                    </div>
+                  </Fragment>
+                )}
             </Col>
           </Row>
           <Row>
-            <Col md={8}>
+            <Col xs={12} md={8}>
               <ProjectNavigationTabs
                 project={project}
                 auth={auth}
                 styles={styles}
               />
             </Col>
-            <Col md={4}>
+            <Col xs={12} className='p-3' md={4}>
               <UserInfo project={project} styles={styles} />
             </Col>
           </Row>
@@ -173,14 +205,20 @@ const Project = ({
 Project.propTypes = {
   project: PropTypes.object.isRequired,
   getProjectById: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired
+  auth: PropTypes.object.isRequired,
+  createConversation: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
+  windowWidth: PropTypes.number.isRequired,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   project: state.project,
-  auth: state.auth
+  auth: state.auth,
 });
 
 export default connect(mapStateToProps, {
-  getProjectById
-})(Project);
+  getProjectById,
+  createConversation,
+  toggleSideNav,
+})(withRouter(windowSize(Project)));

@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../../../middleware/auth');
 const { check, validationResult } = require('express-validator');
-const Campaign = require('../../../models/crowdfunding/Campaign');
 const stripe = require('stripe')('sk_test_XlhQvFYUTZ4qdeqnN3X3RVTX00CoTYt5Sz');
+const auth = require('../../../middleware/auth');
+const Campaign = require('../../../models/crowdfunding/Campaign');
 
 // @route   GET /api/crowdfunding/campaigns
 // @desc    Get all campaigns
@@ -31,7 +31,7 @@ router.get('/user', auth, async (req, res) => {
   }
 });
 
-// @route   GET /api/crowdfunding/campaigns/search
+// @route   GET /api/crowdfunding/campaigns/search/:description
 // @desc    Search for a particular campaign
 // @access  Private
 router.get('/search/:description', auth, async (req, res) => {
@@ -207,45 +207,6 @@ router.put(
   }
 );
 
-// @route   DELETE /api/crowdfunding/campaigns/comment/:id/:comment_id
-// @desc    Delete a comment on a campaign
-// @access  Private
-router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-
-  try {
-    const campaign = await Campaign.findOne({ _id: req.params.id });
-
-    const removeIndex = campaign.comments
-      .map(item => item.id)
-      .indexOf(req.params.comment_id);
-
-    if (removeIndex === -1) {
-      return res.status(404).json({ msg: 'Comment not found' });
-    }
-
-    const comment = campaign.comments.find(
-      comment => comment.id === req.params.comment_id
-    );
-
-    campaign.comments.splice(removeIndex, 1);
-
-    campaign.populate('comments.user', ['name', 'avatar'], (err, res) => {
-      if (err) throw err;
-      return res;
-    });
-
-    await campaign.save();
-    res.json(campaign);
-  } catch (err) {
-    console.error(err.message);
-    return res.status(500).send('Server error');
-  }
-});
-
 // @route   PUT api/crowdfunding/campaigns/:id
 // @desc    Update a campaign
 // @access  Private
@@ -315,6 +276,45 @@ router.put(
     }
   }
 );
+
+// @route   DELETE /api/crowdfunding/campaigns/comment/:id/:comment_id
+// @desc    Delete a comment on a campaign
+// @access  Private
+router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try {
+    const campaign = await Campaign.findOne({ _id: req.params.id });
+
+    const removeIndex = campaign.comments
+      .map(item => item.id)
+      .indexOf(req.params.comment_id);
+
+    if (removeIndex === -1) {
+      return res.status(404).json({ msg: 'Comment not found' });
+    }
+
+    const comment = campaign.comments.find(
+      comment => comment.id === req.params.comment_id
+    );
+
+    campaign.comments.splice(removeIndex, 1);
+
+    campaign.populate('comments.user', ['name', 'avatar'], (err, res) => {
+      if (err) throw err;
+      return res;
+    });
+
+    await campaign.save();
+    res.json(campaign);
+  } catch (err) {
+    console.error(err.message);
+    return res.status(500).send('Server error');
+  }
+});
 
 // @route   DELETE /api/crowdfunding/campaigns/:id
 // @desc    Delete a campaign

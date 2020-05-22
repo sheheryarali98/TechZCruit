@@ -11,6 +11,7 @@
   padding-bottom: 5rem;
   padding-right: 0.7rem;
   padding-left: 0.7rem;
+  z-index: 1;
 }
 
 .side_nav::-webkit-scrollbar {
@@ -58,6 +59,14 @@
   padding-right: 2.5rem;
 }
 
+.hidden {
+  visibility: hidden;
+}
+
+.side_nav_hidden {
+  margin-left: 0;
+}
+
 .heading {
   font-size: 2.5rem;
   font-weight: bold;
@@ -66,28 +75,6 @@
 .sub_heading {
   font-size: 1.3rem;
   margin-top: 0.3rem;
-}
-
-.btn_primary {
-  background: #ff9a03;
-  border-color: transparent;
-  color: white;
-  margin-right: 1rem;
-}
-
-.btn_primary:hover {
-  background: #e38b07;
-  border-color: transparent;
-}
-
-.btn_primary:focus {
-  box-shadow: none;
-}
-
-.btn_primary:active {
-  background: #e38b07 !important;
-  box-shadow: none !important;
-  border-color: transparent !important;
 }
 
 .profile_top {
@@ -102,7 +89,9 @@
 }
 
 .skills {
+  display: flex;
   justify-content: center;
+  align-items: center;
   margin: 1rem 0;
 }
 
@@ -118,11 +107,14 @@
 
 .social_links {
   padding-top: 0.8rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .social_links > a {
   color: white;
-  margin-right: 1rem;
+  margin: 0.5rem;
 }
 
 .footer,
@@ -139,4 +131,31 @@ section::after {
   flex-direction: column;
   justify-content: center;
   border-top: solid 1px white;
+}
+
+@media (max-width: 576px) {
+  .content {
+    margin-left: 0;
+    padding-left: 1.3rem;
+    padding-right: 1.3rem;
+  }
+
+  .heading {
+    font-size: 1.6rem;
+  }
+
+  .sub_heading {
+    font-size: 1.2rem;
+  }
+
+  .profile_top,
+  .profile_about,
+  .content > div:nth-child(3) {
+    margin-left: 0.1rem;
+    margin-right: 0.1rem;
+  }
+
+  .skills {
+    flex-direction: column;
+  }
 }

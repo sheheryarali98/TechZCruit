@@ -8,18 +8,33 @@ import SideNav from '../../layout/SideNav';
 import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
 import styles from '../../../css/community/my-groups/style.module.css';
+import { toggleSideNav } from '../../../actions/auth';
+import windowSize from 'react-window-size';
 
-const MyGroups = ({ getAllGroupsForUser, group: { loading, groups } }) => {
+const MyGroups = ({
+  getAllGroupsForUser,
+  group: { loading, groups },
+  toggleSideNav,
+  windowWidth,
+  auth: { displaySideNav },
+}) => {
   useEffect(() => {
     getAllGroupsForUser();
-  }, [getAllGroupsForUser]);
+
+    toggleSideNav(windowWidth >= 576);
+    // eslint-disable-next-line
+  }, [getAllGroupsForUser, toggleSideNav]);
 
   return (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />
 
-        <div className={styles.content}>
+        <div
+          className={`${styles.content} ${
+            !displaySideNav ? styles.side_nav_hidden : ''
+          }`}
+        >
           <Alert />
           <h1 className={styles.heading}>
             <i className='fas fa-user'></i> My Groups
@@ -35,7 +50,9 @@ const MyGroups = ({ getAllGroupsForUser, group: { loading, groups } }) => {
             <i className='fas fa-users'></i> Create new group
           </Button>
           {!loading && groups.length > 0 ? (
-            groups.map(group => <MyGroupItem group={group} styles={styles} />)
+            groups.map((group) => (
+              <MyGroupItem key={group._id} group={group} styles={styles} />
+            ))
           ) : (
             <div className={styles.sub_heading}>No groups found</div>
           )}
@@ -49,13 +66,18 @@ const MyGroups = ({ getAllGroupsForUser, group: { loading, groups } }) => {
 
 MyGroups.propTypes = {
   getAllGroupsForUser: PropTypes.func.isRequired,
-  group: PropTypes.object.isRequired
+  group: PropTypes.object.isRequired,
+  auth: PropTypes.object.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
+  windowWidth: PropTypes.number.isRequired,
 };
 
-const mapStateToProps = state => ({
-  group: state.group
+const mapStateToProps = (state) => ({
+  group: state.group,
+  auth: state.auth,
 });
 
 export default connect(mapStateToProps, {
-  getAllGroupsForUser
-})(MyGroups);
+  getAllGroupsForUser,
+  toggleSideNav,
+})(windowSize(MyGroups));

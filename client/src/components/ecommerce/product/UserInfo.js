@@ -5,9 +5,9 @@ import { Row, Col } from 'react-bootstrap';
 const UserInfo = ({ product, styles }) => {
   return (
     <Fragment>
-      <div className={styles.sub_heading}>Product owner:</div>
+      <div className='lead mb-3 mt-1'>Product owner</div>
       <Row>
-        <Col md={12} style={{ textAlign: 'center' }}>
+        <Col xs={12} md={12} style={{ textAlign: 'center' }}>
           <img
             src={product !== null ? product.user.avatar : ''}
             alt=''
@@ -25,7 +25,7 @@ const UserInfo = ({ product, styles }) => {
 
 UserInfo.propTypes = {
   product: PropTypes.object.isRequired,
-  styles: PropTypes.object.isRequired
+  styles: PropTypes.object.isRequired,
 };
 
 export default UserInfo;

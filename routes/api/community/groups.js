@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../../../middleware/auth');
 const { check, validationResult } = require('express-validator');
+const auth = require('../../../middleware/auth');
 const Group = require('../../../models/community/Group');
 const User = require('../../../models/User');
 const Post = require('../../../models/community/Post');
@@ -25,6 +25,23 @@ router.get('/user', auth, async (req, res) => {
   try {
     const groups = await Group.find({ admin: req.user.id });
     res.json(groups);
+  } catch (err) {
+    return res.status(500).send('Server error');
+  }
+});
+
+// @route   GET /api/community/groups/search/:description
+// @desc    Search for a particular group
+// @access  Private
+router.get('/search/:description', auth, async (req, res) => {
+  const description = req.params.description;
+
+  try {
+    const groups = await Group.find({
+      name: new RegExp(description, 'i')
+    });
+
+    res.send(groups);
   } catch (err) {
     return res.status(500).send('Server error');
   }
@@ -107,10 +124,10 @@ router.put('/request/:id', auth, async (req, res) => {
   }
 });
 
-// @route   DELETE /api/community/groups/request/:id/:req_id
-// @desc    Delete request to join a group
+// @route   PUT /api/community/groups/:id/:user_id
+// @desc    Add member to a group
 // @access  Private
-router.delete('/request/:id/:req_id', auth, async (req, res) => {
+router.put('/:id/:user_id', auth, async (req, res) => {
   try {
     const group = await Group.findById(req.params.id);
 
@@ -122,17 +139,23 @@ router.delete('/request/:id/:req_id', auth, async (req, res) => {
       return res.status(401).json({ msg: 'Not authorized' });
     }
 
-    const index = group.requests
-      .map(item => item._id)
-      .indexOf(req.params.req_id);
+    const user = await User.findById(req.params.user_id);
 
-    if (index === -1) {
-      return res.status(400).json({ msg: 'Request not found' });
+    if (!user) {
+      return res.status(400).json({ msg: 'User does not exist' });
     }
 
-    group.requests.splice(index, 1);
+    const index = group.members
+      .map(item => item.user)
+      .indexOf(req.params.user_id);
 
-    group.populate('requests.user', ['name', 'avatar'], (err, res) => {
+    if (index !== -1) {
+      return res.status(400).json({ msg: 'User already a member' });
+    }
+
+    group.members.push({ user: req.params.user_id });
+
+    group.populate('members.user', ['name', 'avatar'], (err, res) => {
       if (err) throw err;
       return res;
     });
@@ -192,10 +215,10 @@ router.put(
   }
 );
 
-// @route   DELETE /api/community/groups/:id
-// @desc    Delete a group
+// @route   DELETE /api/community/groups/request/:id/:req_id
+// @desc    Delete request to join a group
 // @access  Private
-router.delete('/:id', auth, async (req, res) => {
+router.delete('/request/:id/:req_id', auth, async (req, res) => {
   try {
     const group = await Group.findById(req.params.id);
 
@@ -207,47 +230,17 @@ router.delete('/:id', auth, async (req, res) => {
       return res.status(401).json({ msg: 'Not authorized' });
     }
 
-    await Post.deleteMany({ group: req.params.id });
+    const index = group.requests
+      .map(item => item._id)
+      .indexOf(req.params.req_id);
 
-    await group.remove();
-    res.json({ msg: 'Group removed' });
-  } catch (err) {
-    return res.status(500).send('Server error');
-  }
-});
-
-// @route   PUT /api/community/groups/:id/:user_id
-// @desc    Add member to a group
-// @access  Private
-router.put('/:id/:user_id', auth, async (req, res) => {
-  try {
-    const group = await Group.findById(req.params.id);
-
-    if (!group) {
-      return res.status(400).json({ msg: 'Group does not exist' });
+    if (index === -1) {
+      return res.status(400).json({ msg: 'Request not found' });
     }
 
-    if (group.admin.toString() !== req.user.id) {
-      return res.status(401).json({ msg: 'Not authorized' });
-    }
+    group.requests.splice(index, 1);
 
-    const user = await User.findById(req.params.user_id);
-
-    if (!user) {
-      return res.status(400).json({ msg: 'User does not exist' });
-    }
-
-    const index = group.members
-      .map(item => item.user)
-      .indexOf(req.params.user_id);
-
-    if (index !== -1) {
-      return res.status(400).json({ msg: 'User already a member' });
-    }
-
-    group.members.push({ user: req.params.user_id });
-
-    group.populate('members.user', ['name', 'avatar'], (err, res) => {
+    group.populate('requests.user', ['name', 'avatar'], (err, res) => {
       if (err) throw err;
       return res;
     });
@@ -293,6 +286,30 @@ router.delete('/:id/:user_id', auth, async (req, res) => {
 
     await group.save();
     res.json(group);
+  } catch (err) {
+    return res.status(500).send('Server error');
+  }
+});
+
+// @route   DELETE /api/community/groups/:id
+// @desc    Delete a group
+// @access  Private
+router.delete('/:id', auth, async (req, res) => {
+  try {
+    const group = await Group.findById(req.params.id);
+
+    if (!group) {
+      return res.status(400).json({ msg: 'Group does not exist' });
+    }
+
+    if (group.admin.toString() !== req.user.id) {
+      return res.status(401).json({ msg: 'Not authorized' });
+    }
+
+    await Post.deleteMany({ group: req.params.id });
+
+    await group.remove();
+    res.json({ msg: 'Group removed' });
   } catch (err) {
     return res.status(500).send('Server error');
   }

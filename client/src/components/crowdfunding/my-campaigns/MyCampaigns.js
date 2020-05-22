@@ -8,21 +8,33 @@ import styles from '../../../css/crowdfunding/my-campaigns/style.module.css';
 import SideNav from '../../layout/SideNav';
 import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
+import { toggleSideNav } from '../../../actions/auth';
+import windowSize from 'react-window-size';
 
 const MyCampaigns = ({
   getAllCampaignsForUser,
-  campaign: { campaigns, loading }
+  campaign: { campaigns, loading },
+  toggleSideNav,
+  windowWidth,
+  auth: { displaySideNav },
 }) => {
   useEffect(() => {
     getAllCampaignsForUser();
-  }, [getAllCampaignsForUser]);
+
+    toggleSideNav(windowWidth >= 576);
+    // eslint-disable-next-line
+  }, [getAllCampaignsForUser, toggleSideNav]);
 
   return (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />
 
-        <div className={styles.content}>
+        <div
+          className={`${styles.content} ${
+            !displaySideNav ? styles.side_nav_hidden : ''
+          }`}
+        >
           <Alert />
           <div className={styles.heading}>
             <i className='fas fa-user'></i> My Campaigns
@@ -38,8 +50,12 @@ const MyCampaigns = ({
             <i className='fas fa-users'></i> Create new campaign
           </Button>
           {!loading && campaigns.length > 0 ? (
-            campaigns.map(campaign => (
-              <MyCampaignItem campaign={campaign} styles={styles} />
+            campaigns.map((campaign) => (
+              <MyCampaignItem
+                key={campaign._id}
+                campaign={campaign}
+                styles={styles}
+              />
             ))
           ) : (
             <div className={styles.sub_heading}>No campaigns found</div>
@@ -54,13 +70,18 @@ const MyCampaigns = ({
 
 MyCampaigns.propTypes = {
   getAllCampaignsForUser: PropTypes.func.isRequired,
-  campaign: PropTypes.object.isRequired
+  campaign: PropTypes.object.isRequired,
+  auth: PropTypes.object.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
+  windowWidth: PropTypes.number.isRequired,
 };
 
-const mapStateToProps = state => ({
-  campaign: state.campaign
+const mapStateToProps = (state) => ({
+  campaign: state.campaign,
+  auth: state.auth,
 });
 
 export default connect(mapStateToProps, {
-  getAllCampaignsForUser
-})(MyCampaigns);
+  getAllCampaignsForUser,
+  toggleSideNav,
+})(windowSize(MyCampaigns));

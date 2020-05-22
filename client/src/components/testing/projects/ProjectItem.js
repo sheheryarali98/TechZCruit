@@ -6,11 +6,11 @@ import placeholder from '../../../img/placeholder.png';
 
 const ProjectItem = ({
   project: { _id, name, description, url, amount },
-  styles
+  styles,
 }) => {
   return (
     <Fragment>
-      <Col md={3}>
+      <Col xs={12} md={4} lg={3}>
         <Card className={styles.card}>
           <Card.Img variant='top' src={placeholder} />
           <Card.Body>
@@ -45,7 +45,7 @@ const ProjectItem = ({
 
 ProjectItem.propTypes = {
   project: PropTypes.object.isRequired,
-  styles: PropTypes.object.isRequired
+  styles: PropTypes.object.isRequired,
 };
 
 export default ProjectItem;

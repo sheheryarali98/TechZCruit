@@ -8,23 +8,35 @@ import styles from '../../../css/ecommerce/stores/style.module.css';
 import SideNav from '../../layout/SideNav';
 import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
+import { toggleSideNav } from '../../../actions/auth';
+import windowSize from 'react-window-size';
 
-const Stores = ({ getAllStores, store: { loading, stores }, searchStore }) => {
+const Stores = ({
+  getAllStores,
+  store: { loading, stores },
+  searchStore,
+  toggleSideNav,
+  windowWidth,
+  auth: { displaySideNav },
+}) => {
   useEffect(() => {
     getAllStores();
-  }, [getAllStores]);
+
+    toggleSideNav(windowWidth >= 576);
+    // eslint-disable-next-line
+  }, [getAllStores, toggleSideNav]);
 
   const [formData, setFormData] = useState({
-    description: ''
+    description: '',
   });
 
   const { description } = formData;
 
-  const onChange = e => {
+  const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const onSubmit = e => {
+  const onSubmit = (e) => {
     e.preventDefault();
     if (description === '') {
       getAllStores();
@@ -38,7 +50,11 @@ const Stores = ({ getAllStores, store: { loading, stores }, searchStore }) => {
       <section className={styles.section}>
         <SideNav styles={styles} />
 
-        <div className={styles.content}>
+        <div
+          className={`${styles.content} ${
+            !displaySideNav ? styles.side_nav_hidden : ''
+          }`}
+        >
           <Alert />
           <div className={styles.heading}>
             <i className='fas fa-user'></i> Stores
@@ -46,14 +62,14 @@ const Stores = ({ getAllStores, store: { loading, stores }, searchStore }) => {
           <div className={styles.sub_heading}>
             Below is a list of all the stores
           </div>
-          <Form onSubmit={e => onSubmit(e)}>
+          <Form onSubmit={(e) => onSubmit(e)}>
             <Form.Group>
               <Form.Control
                 type='text'
                 name='description'
                 value={description}
                 placeholder='Search stores'
-                onChange={e => onChange(e)}
+                onChange={(e) => onChange(e)}
               />
             </Form.Group>
             <Form.Group>
@@ -62,7 +78,7 @@ const Stores = ({ getAllStores, store: { loading, stores }, searchStore }) => {
           </Form>
           <Row>
             {!loading && stores.length > 0 ? (
-              stores.map(store => (
+              stores.map((store) => (
                 <StoreItem key={store._id} store={store} styles={styles} />
               ))
             ) : (
@@ -80,14 +96,19 @@ const Stores = ({ getAllStores, store: { loading, stores }, searchStore }) => {
 Stores.propTypes = {
   getAllStores: PropTypes.func.isRequired,
   store: PropTypes.object.isRequired,
-  searchStore: PropTypes.func.isRequired
+  searchStore: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  toggleSideNav: PropTypes.func.isRequired,
+  windowWidth: PropTypes.number.isRequired,
 };
 
-const mapStateToProps = state => ({
-  store: state.store
+const mapStateToProps = (state) => ({
+  store: state.store,
+  auth: state.auth,
 });
 
 export default connect(mapStateToProps, {
   getAllStores,
-  searchStore
-})(Stores);
+  searchStore,
+  toggleSideNav,
+})(windowSize(Stores));

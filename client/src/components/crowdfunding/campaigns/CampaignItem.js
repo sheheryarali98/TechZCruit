@@ -6,11 +6,11 @@ import placeholder from '../../../img/placeholder.png';
 
 const CampaignItem = ({
   campaign: { _id, title, description, supporters, fundsRequired },
-  styles
+  styles,
 }) => {
   return (
     <Fragment>
-      <Col md={3}>
+      <Col xs={12} md={4} lg={3}>
         <Card className={styles.card}>
           <Card.Img variant='top' src={placeholder} />
           <Card.Body>
@@ -28,7 +28,7 @@ const CampaignItem = ({
             <strong>Funds raised:</strong>{' '}
             {Math.round(
               (supporters
-                .map(supporter => supporter.amount)
+                .map((supporter) => supporter.amount)
                 .reduce((a, b) => a + b, 0) /
                 fundsRequired) *
                 100
@@ -43,7 +43,7 @@ const CampaignItem = ({
 
 CampaignItem.propTypes = {
   campaign: PropTypes.object.isRequired,
-  styles: PropTypes.object.isRequired
+  styles: PropTypes.object.isRequired,
 };
 
 export default CampaignItem;

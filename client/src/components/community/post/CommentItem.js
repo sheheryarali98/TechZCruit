@@ -9,13 +9,13 @@ const CommentItem = ({ comment, auth, deleteComment, post, styles }) => {
   return (
     <Fragment>
       <Row className={styles.list_item}>
-        <Col md={2}>
+        <Col xs={12} md={3}>
           <Link to={`/profile/${comment.user._id}`}>
             <img src={comment.user.avatar} alt='' className='round-img' />
             <div className={styles.user_name}>{comment.user.name}</div>
           </Link>
         </Col>
-        <Col md={10}>
+        <Col xs={12} md={9}>
           <p>{comment.description}</p>
           <div className='my-1'>
             {auth.user !== null &&
@@ -40,9 +40,9 @@ CommentItem.propTypes = {
   auth: PropTypes.object.isRequired,
   deleteComment: PropTypes.func.isRequired,
   post: PropTypes.object.isRequired,
-  styles: PropTypes.object.isRequired
+  styles: PropTypes.object.isRequired,
 };
 
 export default connect(null, {
-  deleteComment
+  deleteComment,
 })(CommentItem);

@@ -13,6 +13,7 @@ import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
 import { toggleSideNav } from '../../../actions/auth';
 import windowSize from 'react-window-size';
+import Spinner from '../../layout/Spinner';
 
 const Campaigns = ({
   getAllCampaigns,
@@ -22,12 +23,17 @@ const Campaigns = ({
   windowWidth,
   auth: { displaySideNav },
 }) => {
+  const [getAllCampaignsCalled, setGetAllCampaignsCalled] = useState(false);
+
   useEffect(() => {
-    getAllCampaigns();
+    if (!getAllCampaignsCalled) {
+      getAllCampaigns();
+      setGetAllCampaignsCalled(true);
+    }
 
     toggleSideNav(windowWidth >= 576);
     // eslint-disable-next-line
-  }, [getAllCampaigns, toggleSideNav]);
+  }, [campaigns, windowWidth]);
 
   const [formData, setFormData] = useState({
     description: '',
@@ -48,7 +54,9 @@ const Campaigns = ({
     }
   };
 
-  return (
+  return loading ? (
+    <Spinner />
+  ) : (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />

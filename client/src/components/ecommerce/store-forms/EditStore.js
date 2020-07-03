@@ -10,6 +10,8 @@ import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
 import { toggleSideNav } from '../../../actions/auth';
 import windowSize from 'react-window-size';
+import Spinner from '../../layout/Spinner';
+import placeholder from '../../../img/placeholder.png';
 
 const EditGroup = ({
   getStoreById,
@@ -24,12 +26,23 @@ const EditGroup = ({
   const [formData, setFormData] = useState({
     name: '',
     description: '',
+    image: '',
   });
 
-  const { name, description } = formData;
+  const { name, description, image } = formData;
 
   const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleImageChange = (e) => {
+    if (e.target.files.length > 0) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setFormData({ ...formData, image: e.target.result });
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
   };
 
   const onSubmit = (e) => {
@@ -37,19 +50,27 @@ const EditGroup = ({
     updateStore(formData, match.params.id, history);
   };
 
+  const [getStoreByIdCalled, setGetStoreByIdCalled] = useState(false);
+
   useEffect(() => {
-    getStoreById(match.params.id);
+    if (!getStoreByIdCalled) {
+      getStoreById(match.params.id);
+      setGetStoreByIdCalled(true);
+    }
 
     setFormData({
       name: !loading && store.name ? store.name : '',
       description: !loading && store.description ? store.description : '',
+      image: !loading && store.image ? store.image : '',
     });
 
     toggleSideNav(windowWidth >= 576);
     // eslint-disable-next-line
-  }, [getStoreById, loading, match.params.id, toggleSideNav]);
+  }, [store, windowWidth]);
 
-  return (
+  return loading ? (
+    <Spinner />
+  ) : (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />
@@ -66,7 +87,30 @@ const EditGroup = ({
           <div className={styles.sub_heading}>
             Fill in the following information to edit the store info
           </div>
+          <div style={{ textAlign: 'center' }}>
+            <img
+              src={image === '' ? placeholder : image}
+              alt=''
+              style={{ width: '400px', height: '400px', marginBottom: '10px' }}
+            />
+          </div>
           <Form onSubmit={(e) => onSubmit(e)}>
+            <Form.Group>
+              <Form.Control
+                type='file'
+                onChange={(e) => {
+                  handleImageChange(e);
+                  e.target.value = '';
+                }}
+              />
+              <Button
+                variant='danger'
+                style={{ marginTop: '10px' }}
+                onClick={() => setFormData({ ...formData, image: '' })}
+              >
+                Remove image
+              </Button>
+            </Form.Group>
             <Form.Group>
               <Form.Control
                 type='text'

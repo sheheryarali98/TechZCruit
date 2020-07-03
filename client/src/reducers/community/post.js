@@ -7,17 +7,18 @@ import {
   POST_UNLIKED,
   POST_LOADED,
   COMMENT_ADDED_POST,
-  COMMENT_REMOVED_POST
+  COMMENT_REMOVED_POST,
+  SET_POST_LOADING,
 } from '../../actions/types';
 
 const initialState = {
   post: null,
   loading: true,
   errors: null,
-  posts: []
+  posts: [],
 };
 
-export default function(state = initialState, action) {
+export default function (state = initialState, action) {
   const { type, payload } = action;
 
   switch (type) {
@@ -26,28 +27,28 @@ export default function(state = initialState, action) {
         ...state,
         posts: payload,
         loading: false,
-        errors: null
+        errors: null,
       };
     case POST_LOADED:
       return {
         ...state,
         post: payload,
         loading: false,
-        errors: null
+        errors: null,
       };
     case POST_ADDED:
       return {
         ...state,
         posts: [...state.posts, payload],
         loading: false,
-        errors: null
+        errors: null,
       };
     case POST_REMOVED:
       return {
         ...state,
-        posts: [...state.posts.filter(post => post._id !== payload)],
+        posts: [...state.posts.filter((post) => post._id !== payload)],
         loading: false,
-        errors: null
+        errors: null,
       };
     case POST_LIKED:
     case POST_UNLIKED:
@@ -56,10 +57,10 @@ export default function(state = initialState, action) {
         loading: false,
         errors: null,
         posts: [
-          ...state.posts.map(post =>
+          ...state.posts.map((post) =>
             post._id === payload._id ? { ...post, likes: payload.likes } : post
-          )
-        ]
+          ),
+        ],
       };
     case COMMENT_ADDED_POST:
     case COMMENT_REMOVED_POST:
@@ -67,13 +68,18 @@ export default function(state = initialState, action) {
         ...state,
         loading: false,
         errors: null,
-        post: { ...state.post, comments: payload.comments }
+        post: { ...state.post, comments: payload.comments },
       };
     case POST_ERROR:
       return {
         ...state,
         loading: false,
-        errors: payload
+        errors: payload,
+      };
+    case SET_POST_LOADING:
+      return {
+        ...state,
+        loading: true,
       };
     default:
       return state;

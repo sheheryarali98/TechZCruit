@@ -6,84 +6,105 @@ import {
   STORE_CREATED,
   STORE_UPDATED,
   STORE_REMOVED,
-  STORE_ERROR
+  STORE_ERROR,
+  SET_STORE_LOADING,
 } from '../types';
 import { setAlert } from '../alert';
 
 // Get all stores
-export const getAllStores = () => async dispatch => {
+export const getAllStores = () => async (dispatch) => {
+  dispatch({
+    type: SET_STORE_LOADING,
+  });
+
   try {
     const res = await axios.get('/api/ecommerce/stores');
 
     dispatch({
       type: All_STORES_LOADED,
-      payload: res.data
+      payload: res.data,
     });
   } catch (err) {
     dispatch({
       type: STORE_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: { msg: err.response.statusText, status: err.response.status },
     });
   }
 };
 
 // Search for a store
-export const searchStore = description => async dispatch => {
+export const searchStore = (description) => async (dispatch) => {
+  dispatch({
+    type: SET_STORE_LOADING,
+  });
+
   try {
     const res = await axios.get(`/api/ecommerce/stores/search/${description}`);
 
     dispatch({
       type: All_STORES_LOADED,
-      payload: res.data
+      payload: res.data,
     });
   } catch (err) {
     dispatch({
       type: STORE_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: { msg: err.response.statusText, status: err.response.status },
     });
   }
 };
 
 // Get all stores for current user
-export const getAllStoresForCurrentUser = () => async dispatch => {
+export const getAllStoresForCurrentUser = () => async (dispatch) => {
+  dispatch({
+    type: SET_STORE_LOADING,
+  });
+
   try {
     const res = await axios.get('/api/ecommerce/stores/user');
 
     dispatch({
       type: All_STORES_LOADED_FOR_CURRENT_USER,
-      payload: res.data
+      payload: res.data,
     });
   } catch (err) {
     dispatch({
       type: STORE_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: { msg: err.response.statusText, status: err.response.status },
     });
   }
 };
 
 // Get store by id
-export const getStoreById = id => async dispatch => {
+export const getStoreById = (id) => async (dispatch) => {
+  dispatch({
+    type: SET_STORE_LOADING,
+  });
+
   try {
     const res = await axios.get(`/api/ecommerce/stores/${id}`);
 
     dispatch({
       type: STORE_LOADED,
-      payload: res.data
+      payload: res.data,
     });
   } catch (err) {
     dispatch({
       type: STORE_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: { msg: err.response.statusText, status: err.response.status },
     });
   }
 };
 
 // Create a new store
-export const createStore = (formData, history) => async dispatch => {
+export const createStore = (formData, history) => async (dispatch) => {
+  dispatch({
+    type: SET_STORE_LOADING,
+  });
+
   const config = {
     headers: {
-      'Content-Type': 'application/json'
-    }
+      'Content-Type': 'application/json',
+    },
   };
 
   try {
@@ -91,7 +112,7 @@ export const createStore = (formData, history) => async dispatch => {
 
     dispatch({
       type: STORE_CREATED,
-      payload: res.data
+      payload: res.data,
     });
 
     dispatch(setAlert('Store created', 'success'));
@@ -101,22 +122,26 @@ export const createStore = (formData, history) => async dispatch => {
     const errors = err.response.data.errors;
 
     if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+      errors.forEach((error) => dispatch(setAlert(error.msg, 'danger')));
     }
 
     dispatch({
       type: STORE_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: { msg: err.response.statusText, status: err.response.status },
     });
   }
 };
 
 // Update a store
-export const updateStore = (formData, id, history) => async dispatch => {
+export const updateStore = (formData, id, history) => async (dispatch) => {
+  dispatch({
+    type: SET_STORE_LOADING,
+  });
+
   const config = {
     headers: {
-      'Content-Type': 'application/json'
-    }
+      'Content-Type': 'application/json',
+    },
   };
 
   try {
@@ -128,7 +153,7 @@ export const updateStore = (formData, id, history) => async dispatch => {
 
     dispatch({
       type: STORE_UPDATED,
-      payload: res.data
+      payload: res.data,
     });
 
     dispatch(setAlert('Store updated', 'success'));
@@ -138,31 +163,35 @@ export const updateStore = (formData, id, history) => async dispatch => {
     const errors = err.response.data.errors;
 
     if (err.response.data.errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+      errors.forEach((error) => dispatch(setAlert(error.msg, 'danger')));
     }
 
     dispatch({
       type: STORE_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: { msg: err.response.statusText, status: err.response.status },
     });
   }
 };
 
 // Delete a store
-export const deleteStore = id => async dispatch => {
+export const deleteStore = (id) => async (dispatch) => {
+  dispatch({
+    type: SET_STORE_LOADING,
+  });
+
   try {
     await axios.delete(`/api/ecommerce/stores/${id}`);
 
     dispatch({
       type: STORE_REMOVED,
-      payload: id
+      payload: id,
     });
 
     dispatch(setAlert('Store removed', 'success'));
   } catch (err) {
     dispatch({
       type: STORE_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: { msg: err.response.statusText, status: err.response.status },
     });
   }
 };

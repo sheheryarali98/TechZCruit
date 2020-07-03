@@ -55,13 +55,6 @@ export default function (state = initialState, action) {
         loading: false,
         user: null,
       };
-    case PROFILE_PICTURE_UPLOADED:
-    case PROFILE_PICTURE_REMOVED:
-      return {
-        ...state,
-        loading: false,
-        user: { ...state.user, avatar: payload },
-      };
     case SIDE_NAV_TOGGLED:
       return {
         ...state,
@@ -69,6 +62,8 @@ export default function (state = initialState, action) {
       };
     case PASSWORD_UPDATED:
     case NAME_UPDATED:
+    case PROFILE_PICTURE_UPLOADED:
+    case PROFILE_PICTURE_REMOVED:
     default:
       return state;
   }

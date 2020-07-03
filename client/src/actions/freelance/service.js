@@ -12,29 +12,38 @@ import {
   REVIEW_REMOVED_SERVICE,
   SERVICE_REQUEST_REMOVED,
   SERVICE_REMOVED,
-  SERVICE_ERROR
+  SERVICE_ERROR,
+  SET_SERVICE_LOADING,
 } from '../../actions/types';
 import { setAlert } from '../../actions/alert';
 
 // Get all services
-export const getAllServices = () => async dispatch => {
+export const getAllServices = () => async (dispatch) => {
+  dispatch({
+    type: SET_SERVICE_LOADING,
+  });
+
   try {
     const res = await axios.get('/api/freelance/services');
 
     dispatch({
       type: All_SERVICES_LOADED,
-      payload: res.data
+      payload: res.data,
     });
   } catch (err) {
     dispatch({
       type: SERVICE_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: { msg: err.response.statusText, status: err.response.status },
     });
   }
 };
 
 // Search for a service
-export const searchService = description => async dispatch => {
+export const searchService = (description) => async (dispatch) => {
+  dispatch({
+    type: SET_SERVICE_LOADING,
+  });
+
   try {
     const res = await axios.get(
       `/api/freelance/services/search/${description}`
@@ -42,57 +51,69 @@ export const searchService = description => async dispatch => {
 
     dispatch({
       type: All_SERVICES_LOADED,
-      payload: res.data
+      payload: res.data,
     });
   } catch (err) {
     console.log(err);
     dispatch({
       type: SERVICE_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: { msg: err.response.statusText, status: err.response.status },
     });
   }
 };
 
 // Get service by id
-export const getServiceById = id => async dispatch => {
+export const getServiceById = (id) => async (dispatch) => {
+  dispatch({
+    type: SET_SERVICE_LOADING,
+  });
+
   try {
     const res = await axios.get(`/api/freelance/services/${id}`);
 
     dispatch({
       type: SERVICE_LOADED,
-      payload: res.data
+      payload: res.data,
     });
   } catch (err) {
     dispatch({
       type: SERVICE_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: { msg: err.response.statusText, status: err.response.status },
     });
   }
 };
 
 // Get services for current user
-export const getAllServicesForCurrentUser = () => async dispatch => {
+export const getAllServicesForCurrentUser = () => async (dispatch) => {
+  dispatch({
+    type: SET_SERVICE_LOADING,
+  });
+
   try {
     const res = await axios.get('/api/freelance/services/user');
 
     dispatch({
       type: All_SERVICES_LOADED_FOR_CURRENT_USER,
-      payload: res.data
+      payload: res.data,
     });
   } catch (err) {
     dispatch({
       type: SERVICE_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: { msg: err.response.statusText, status: err.response.status },
     });
   }
 };
 
 // Create a new service
-export const createService = (formData, history) => async dispatch => {
+export const createService = (formData, history) => async (dispatch) => {
+  dispatch({
+    type: SET_SERVICE_LOADING,
+  });
+
   const config = {
     headers: {
-      'Content-Type': 'application/json'
-    }
+      'Content-Type': 'application/json',
+    },
   };
 
   try {
@@ -100,7 +121,7 @@ export const createService = (formData, history) => async dispatch => {
 
     dispatch({
       type: SERVICE_CREATED,
-      payload: res.data
+      payload: res.data,
     });
 
     dispatch(setAlert('Service created', 'success'));
@@ -110,18 +131,24 @@ export const createService = (formData, history) => async dispatch => {
     const errors = err.response.data.errors;
 
     if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+      errors.forEach((error) => dispatch(setAlert(error.msg, 'danger')));
     }
 
     dispatch({
       type: SERVICE_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: { msg: err.response.statusText, status: err.response.status },
     });
   }
 };
 
 // Add service to service
-export const addServiceToService = (serviceId, requestId) => async dispatch => {
+export const addServiceToService = (serviceId, requestId) => async (
+  dispatch
+) => {
+  dispatch({
+    type: SET_SERVICE_LOADING,
+  });
+
   try {
     const res = await axios.put(
       `/api/freelance/services/${serviceId}/${requestId}`
@@ -129,20 +156,24 @@ export const addServiceToService = (serviceId, requestId) => async dispatch => {
 
     dispatch({
       type: SERVICE_SERVICE_ADDED,
-      payload: res.data
+      payload: res.data,
     });
 
     dispatch(setAlert('Service added', 'success'));
   } catch (err) {
     dispatch({
       type: SERVICE_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: { msg: err.response.statusText, status: err.response.status },
     });
   }
 };
 
 // Finish service for a service
-export const finishServiceForService = (id, serviceId) => async dispatch => {
+export const finishServiceForService = (id, serviceId) => async (dispatch) => {
+  dispatch({
+    type: SET_SERVICE_LOADING,
+  });
+
   try {
     const res = await axios.put(
       `/api/freelance/services/finish/${id}/${serviceId}`
@@ -150,24 +181,28 @@ export const finishServiceForService = (id, serviceId) => async dispatch => {
 
     dispatch({
       type: SERVICE_SERVICE_FINISHED,
-      payload: res.data
+      payload: res.data,
     });
 
     dispatch(setAlert('Service finished', 'success'));
   } catch (err) {
     dispatch({
       type: SERVICE_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: { msg: err.response.statusText, status: err.response.status },
     });
   }
 };
 
 // Review on service
-export const reviewOnService = (id, formData) => async dispatch => {
+export const reviewOnService = (id, formData) => async (dispatch) => {
+  dispatch({
+    type: SET_SERVICE_LOADING,
+  });
+
   const config = {
     headers: {
-      'Content-Type': 'application/json'
-    }
+      'Content-Type': 'application/json',
+    },
   };
 
   try {
@@ -179,24 +214,28 @@ export const reviewOnService = (id, formData) => async dispatch => {
 
     dispatch({
       type: REVIEW_ADDED_SERVICE,
-      payload: res.data
+      payload: res.data,
     });
 
     dispatch(setAlert('Review added', 'success'));
   } catch (err) {
     const errors = err.response.data.errors;
     if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+      errors.forEach((error) => dispatch(setAlert(error.msg, 'danger')));
     }
   }
 };
 
 // Update a service
-export const updateService = (id, formData, history) => async dispatch => {
+export const updateService = (id, formData, history) => async (dispatch) => {
+  dispatch({
+    type: SET_SERVICE_LOADING,
+  });
+
   const config = {
     headers: {
-      'Content-Type': 'application/json'
-    }
+      'Content-Type': 'application/json',
+    },
   };
 
   try {
@@ -208,7 +247,7 @@ export const updateService = (id, formData, history) => async dispatch => {
 
     dispatch({
       type: SERVICE_UPDATED,
-      payload: res.data
+      payload: res.data,
     });
 
     dispatch(setAlert('Service updated', 'success'));
@@ -218,12 +257,12 @@ export const updateService = (id, formData, history) => async dispatch => {
     const errors = err.response.data.errors;
 
     if (errors) {
-      errors.forEach(error => dispatch(setAlert(error.msg, 'danger')));
+      errors.forEach((error) => dispatch(setAlert(error.msg, 'danger')));
     }
 
     dispatch({
       type: SERVICE_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: { msg: err.response.statusText, status: err.response.status },
     });
   }
 };
@@ -234,11 +273,11 @@ export const sendRequestForService = (
   description,
   amount,
   paymentMethodId
-) => async dispatch => {
+) => async (dispatch) => {
   const config = {
     headers: {
-      'Content-Type': 'application/json'
-    }
+      'Content-Type': 'application/json',
+    },
   };
 
   const body = JSON.stringify({ description, amount, paymentMethodId });
@@ -252,42 +291,49 @@ export const sendRequestForService = (
 
     dispatch({
       type: SERVICE_REQUEST_SENT,
-      payload: res.data
+      payload: res.data,
     });
 
     dispatch(setAlert('Request sent', 'success'));
   } catch (err) {
     dispatch({
       type: SERVICE_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: { msg: err.response.statusText, status: err.response.status },
     });
   }
 };
 
 // Delete a service
-export const deleteService = id => async dispatch => {
+export const deleteService = (id) => async (dispatch) => {
+  dispatch({
+    type: SET_SERVICE_LOADING,
+  });
+
   try {
     await axios.delete(`/api/freelance/services/${id}`);
 
     dispatch({
       type: SERVICE_REMOVED,
-      payload: id
+      payload: id,
     });
 
     dispatch(setAlert('Service removed', 'success'));
   } catch (err) {
     dispatch({
       type: SERVICE_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: { msg: err.response.statusText, status: err.response.status },
     });
   }
 };
 
 // Delete a request for a service
-export const deleteRequestForService = (
-  serviceId,
-  requestId
-) => async dispatch => {
+export const deleteRequestForService = (serviceId, requestId) => async (
+  dispatch
+) => {
+  dispatch({
+    type: SET_SERVICE_LOADING,
+  });
+
   try {
     const res = await axios.delete(
       `/api/freelance/services/request/${serviceId}/${requestId}`
@@ -295,23 +341,26 @@ export const deleteRequestForService = (
 
     dispatch({
       type: SERVICE_REQUEST_REMOVED,
-      payload: res.data
+      payload: res.data,
     });
 
     dispatch(setAlert('Request removed', 'success'));
   } catch (err) {
     dispatch({
       type: SERVICE_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: { msg: err.response.statusText, status: err.response.status },
     });
   }
 };
 
 // Delete review on service
-export const deleteReviewOnService = (
-  serviceId,
-  reviewId
-) => async dispatch => {
+export const deleteReviewOnService = (serviceId, reviewId) => async (
+  dispatch
+) => {
+  dispatch({
+    type: SET_SERVICE_LOADING,
+  });
+
   try {
     const res = await axios.delete(
       `/api/freelance/services/review/${serviceId}/${reviewId}`
@@ -319,7 +368,7 @@ export const deleteReviewOnService = (
 
     dispatch({
       type: REVIEW_REMOVED_SERVICE,
-      payload: res.data
+      payload: res.data,
     });
 
     dispatch(setAlert('Review removed', 'success'));
@@ -327,7 +376,7 @@ export const deleteReviewOnService = (
     console.log(err);
     dispatch({
       type: SERVICE_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status }
+      payload: { msg: err.response.statusText, status: err.response.status },
     });
   }
 };

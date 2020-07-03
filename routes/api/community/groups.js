@@ -38,7 +38,7 @@ router.get('/search/:description', auth, async (req, res) => {
 
   try {
     const groups = await Group.find({
-      name: new RegExp(description, 'i')
+      name: new RegExp(description, 'i'),
     });
 
     res.send(groups);
@@ -53,7 +53,7 @@ router.get('/search/:description', auth, async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const group = await Group.findOne({
-      _id: req.params.id
+      _id: req.params.id,
     })
       .populate('admin', ['name', 'avatar'])
       .populate('members.user', ['name', 'avatar'])
@@ -69,24 +69,20 @@ router.get('/:id', async (req, res) => {
 // @access  Private
 router.post(
   '/',
-  [
-    auth,
-    check('name', 'Name is required')
-      .not()
-      .isEmpty()
-  ],
+  [auth, check('name', 'Name is required').not().isEmpty()],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, description } = req.body;
+    const { name, description, image } = req.body;
 
     const newGroup = new Group({
       admin: req.user.id,
       name,
-      description
+      description,
+      image,
     });
 
     try {
@@ -109,7 +105,7 @@ router.put('/request/:id', auth, async (req, res) => {
       return res.status(400).json({ msg: 'Group does not exist' });
     }
 
-    const index = group.requests.map(item => item.user).indexOf(req.user.id);
+    const index = group.requests.map((item) => item.user).indexOf(req.user.id);
 
     if (index !== -1) {
       return res.status(400).json({ msg: 'Request already sent' });
@@ -146,7 +142,7 @@ router.put('/:id/:user_id', auth, async (req, res) => {
     }
 
     const index = group.members
-      .map(item => item.user)
+      .map((item) => item.user)
       .indexOf(req.params.user_id);
 
     if (index !== -1) {
@@ -172,12 +168,7 @@ router.put('/:id/:user_id', auth, async (req, res) => {
 // @access  Private
 router.put(
   '/:id',
-  [
-    auth,
-    check('name', 'Name is required')
-      .not()
-      .isEmpty()
-  ],
+  [auth, check('name', 'Name is required').not().isEmpty()],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -195,15 +186,16 @@ router.put(
         return res.status(401).json({ msg: 'Not authorized' });
       }
 
-      const { name, description } = req.body;
+      const { name, description, image } = req.body;
 
       group = await Group.findOneAndUpdate(
         { _id: req.params.id },
         {
           $set: {
             name,
-            description
-          }
+            description,
+            image,
+          },
         },
         { new: true }
       );
@@ -231,7 +223,7 @@ router.delete('/request/:id/:req_id', auth, async (req, res) => {
     }
 
     const index = group.requests
-      .map(item => item._id)
+      .map((item) => item._id)
       .indexOf(req.params.req_id);
 
     if (index === -1) {
@@ -270,7 +262,7 @@ router.delete('/:id/:user_id', auth, async (req, res) => {
     }
 
     const index = group.members
-      .map(item => item.user)
+      .map((item) => item.user)
       .indexOf(req.params.user_id);
 
     if (index === -1) {

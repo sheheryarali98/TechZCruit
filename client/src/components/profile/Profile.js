@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import ProfileTop from './ProfileTop';
 import ProfileAbout from './ProfileAbout';
@@ -17,23 +17,28 @@ import windowSize from 'react-window-size';
 const Profile = ({
   match,
   getProfileById,
-  profile,
+  profile: { loading, profile },
   toggleSideNav,
   windowWidth,
   auth: { displaySideNav },
 }) => {
+  const [getProfileByIdCalled, setGetProfileByIdCalled] = useState(false);
+
   useEffect(() => {
-    getProfileById(match.params.id);
+    if (!getProfileByIdCalled) {
+      getProfileById(match.params.id);
+      setGetProfileByIdCalled(true);
+    }
 
     toggleSideNav(windowWidth >= 576);
     // eslint-disable-next-line
-  }, [getProfileById, match.params.id, toggleSideNav]);
+  }, [profile, windowWidth]);
 
   return (
     <Fragment>
-      {profile === null ? (
+      {loading ? (
         <Spinner />
-      ) : (
+      ) : !loading && profile !== null ? (
         <Fragment>
           <section className={styles.section}>
             <SideNav styles={styles} />
@@ -60,6 +65,25 @@ const Profile = ({
 
           <Footer styles={styles} />
         </Fragment>
+      ) : (
+        <Fragment>
+          <section className={styles.section}>
+            <SideNav styles={styles} />
+
+            <div
+              className={`${styles.content} ${
+                !displaySideNav ? styles.side_nav_hidden : ''
+              }`}
+            >
+              <div style={{ fontSize: '2rem', fontWeight: 'bold' }}>
+                <i className='fas fa-user' style={{ fontSize: '2rem' }}></i> No
+                profile found for user
+              </div>
+            </div>
+          </section>
+
+          <Footer styles={styles} />
+        </Fragment>
       )}
     </Fragment>
   );
@@ -74,7 +98,7 @@ Profile.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
-  profile: state.profile.profile,
+  profile: state.profile,
   auth: state.auth,
 });
 

@@ -17,6 +17,7 @@ import { createConversation } from '../../../actions/chat/conversation';
 import { withRouter } from 'react-router-dom';
 import { toggleSideNav } from '../../../actions/auth';
 import windowSize from 'react-window-size';
+import Spinner from '../../layout/Spinner';
 
 const Service = ({
   service: { loading, service },
@@ -28,12 +29,17 @@ const Service = ({
   toggleSideNav,
   windowWidth,
 }) => {
+  const [getServiceByIdCalled, setGetServiceByIdCalled] = useState(false);
+
   useEffect(() => {
-    getServiceById(match.params.id);
+    if (!getServiceByIdCalled) {
+      getServiceById(match.params.id);
+      setGetServiceByIdCalled(true);
+    }
 
     toggleSideNav(windowWidth >= 576);
     // eslint-disable-next-line
-  }, [getServiceById, match.params.id, toggleSideNav]);
+  }, [service, windowWidth]);
 
   const [
     showCustomOfferPaymentModal,
@@ -62,7 +68,9 @@ const Service = ({
     history.push(`/conversation/${conversationId}`);
   };
 
-  return (
+  return loading ? (
+    <Spinner />
+  ) : (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />
@@ -115,7 +123,15 @@ const Service = ({
           </div>
           <Row className='my-3'>
             <Col xs={12} md={8}>
-              <img src={placeholder} alt='' className={styles.image} />
+              <img
+                src={
+                  !loading && service !== null && service.image
+                    ? service.image
+                    : placeholder
+                }
+                alt=''
+                className={styles.image}
+              />
             </Col>
             <Col xs={12} className='p-3' md={4}>
               <div>

@@ -28,14 +28,12 @@ router.get('/store', async (req, res) => {
 router.post(
   '/',
   [
-    check('name', 'Name is required')
-      .not()
-      .isEmpty(),
+    check('name', 'Name is required').not().isEmpty(),
     check('email', 'Please include a valid email account').isEmail(),
     check(
       'password',
       'Please enter a password with 6 or more characters'
-    ).isLength({ min: 6 })
+    ).isLength({ min: 6 }),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -58,14 +56,14 @@ router.post(
       const avatar = gravatar.url(email, {
         s: '200',
         r: 'pg',
-        d: 'mm'
+        d: 'mm',
       });
 
       user = new User({
         name,
         email,
         password,
-        avatar
+        avatar,
       });
 
       // Encrypt the password
@@ -76,15 +74,15 @@ router.post(
 
       const payload = {
         user: {
-          id: user.id
-        }
+          id: user.id,
+        },
       };
 
       jwt.sign(
         payload,
         config.get('jwtSecret'),
         {
-          expiresIn: 3600
+          expiresIn: 86400,
         },
         (err, token) => {
           if (err) throw err;
@@ -108,7 +106,7 @@ router.put(
     check(
       'password',
       'Please enter a password with 6 or more characters'
-    ).isLength({ min: 6 })
+    ).isLength({ min: 6 }),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -137,12 +135,7 @@ router.put(
 // @access  Private
 router.put(
   '/name',
-  [
-    auth,
-    check('name', 'Name is required')
-      .not()
-      .isEmpty()
-  ],
+  [auth, check('name', 'Name is required').not().isEmpty()],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -167,63 +160,43 @@ router.put(
 // @route   PUT /api/users/profile-picture/upload
 // @desc    Upload profile picture
 // @access  Private
-router.put('/profile-picture/upload', auth, async (req, res) => {
-  if (req.files === null) {
-    return res.status(400).json({ msg: 'No file uploaded' });
-  }
+router.put(
+  '/profile-picture/upload',
+  [auth, check('image', 'Image is required').not().isEmpty()],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
-  const file = req.files.file;
-  const fileExtension = file.mimetype.split('/')[1];
-
-  if (fileExtension === 'jpeg') {
-    file.mv(
-      `./client/public/uploads/profile-picture/${req.user.id}.${fileExtension}`,
-      err => {
-        if (err) {
-          return res.status(500).send('Server error');
-        }
-
-        res.json({
-          avatar: `/uploads/profile-picture/${req.user.id}.${fileExtension}`
-        });
-      }
-    );
+    const { image } = req.body;
 
     try {
       const user = await User.findById(req.user.id);
-      user.avatar = `/uploads/profile-picture/${req.user.id}.${fileExtension}`;
+      user.avatar = image;
+
       await user.save();
+      res.json({ msg: 'Profile picture uploaded' });
     } catch (err) {
       return res.status(500).send('Server error');
     }
-  } else {
-    return res.status(400).json({ msg: 'Only jpeg images can be uploaded' });
   }
-});
+);
 
 // @route   PUT /api/users/profile-picture/remove
 // @desc    Remove profile picture
 // @access  Private
 router.put('/profile-picture/remove', auth, async (req, res) => {
-  fs.unlink(
-    `./client/public/uploads/profile-picture/${req.user.id}.jpeg`,
-    err => {
-      if (err) {
-        return res.status(500).send('Server error');
-      }
-    }
-  );
-
   try {
     const user = await User.findById(req.user.id);
     user.avatar = gravatar.url(user.email, {
       s: '200',
       r: 'pg',
-      d: 'mm'
+      d: 'mm',
     });
 
     await user.save();
-    res.json({ avatar: user.avatar });
+    res.json({ msg: 'Profile picture removed' });
   } catch (err) {
     console.error(err);
     return res.status(500).send('Server error');

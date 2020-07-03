@@ -20,6 +20,7 @@ import Footer from '../../layout/Footer';
 import { Link, withRouter } from 'react-router-dom';
 import { toggleSideNav } from '../../../actions/auth';
 import windowSize from 'react-window-size';
+import Spinner from '../../layout/Spinner';
 
 const Product = ({
   product: { product, loading },
@@ -33,12 +34,17 @@ const Product = ({
   toggleSideNav,
   windowWidth,
 }) => {
+  const [getProductByIdCalled, setGetProductByIdCalled] = useState(false);
+
   useEffect(() => {
-    getProductById(match.params.id);
+    if (!getProductByIdCalled) {
+      getProductById(match.params.id);
+      setGetProductByIdCalled(true);
+    }
 
     toggleSideNav(windowWidth >= 576);
     // eslint-disable-next-line
-  }, [getProductById, match.params.id, toggleSideNav]);
+  }, [product, windowWidth]);
 
   const [showPaymentModal, setShowPaymentModal] = useState(false);
 
@@ -78,7 +84,9 @@ const Product = ({
     history.push(`/conversation/${conversationId}`);
   };
 
-  return (
+  return loading ? (
+    <Spinner />
+  ) : (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />
@@ -110,7 +118,15 @@ const Product = ({
           </div>
           <Row className='my-3'>
             <Col xs={12} md={8}>
-              <img src={placeholder} alt='' className={styles.image} />
+              <img
+                src={
+                  !loading && product !== null && product.image
+                    ? product.image
+                    : placeholder
+                }
+                alt=''
+                className={styles.image}
+              />
             </Col>
             <Col className='p-3' xs={12} md={4}>
               <div>

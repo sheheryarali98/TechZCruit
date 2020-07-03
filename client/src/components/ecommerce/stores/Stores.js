@@ -10,6 +10,7 @@ import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
 import { toggleSideNav } from '../../../actions/auth';
 import windowSize from 'react-window-size';
+import Spinner from '../../layout/Spinner';
 
 const Stores = ({
   getAllStores,
@@ -19,8 +20,13 @@ const Stores = ({
   windowWidth,
   auth: { displaySideNav },
 }) => {
+  const [getAllStoresCalled, setGetAllStoresCalled] = useState(false);
+
   useEffect(() => {
-    getAllStores();
+    if (!getAllStoresCalled) {
+      getAllStores();
+      setGetAllStoresCalled(true);
+    }
 
     toggleSideNav(windowWidth >= 576);
     // eslint-disable-next-line
@@ -45,7 +51,9 @@ const Stores = ({
     }
   };
 
-  return (
+  return loading ? (
+    <Spinner />
+  ) : (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />

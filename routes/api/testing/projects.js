@@ -35,9 +35,9 @@ router.get('/user', auth, async (req, res) => {
 router.get('/user/ongoing', auth, async (req, res) => {
   try {
     let projects = await Project.find();
-    projects = projects.filter(project => {
+    projects = projects.filter((project) => {
       const index = project.testers
-        .map(tester => {
+        .map((tester) => {
           if (!tester.status) {
             return tester.user;
           }
@@ -62,7 +62,7 @@ router.get('/search/:description', auth, async (req, res) => {
 
   try {
     const projects = await Project.find({
-      name: new RegExp(description, 'i')
+      name: new RegExp(description, 'i'),
     });
 
     res.send(projects);
@@ -94,14 +94,10 @@ router.post(
   '/',
   [
     auth,
-    check('name', 'Name is required')
-      .not()
-      .isEmpty(),
-    check('description', 'Description is required')
-      .not()
-      .isEmpty(),
+    check('name', 'Name is required').not().isEmpty(),
+    check('description', 'Description is required').not().isEmpty(),
     check('url', 'URL is required and must be valid').isURL(),
-    check('amount', 'Amount is required and must be an integer').isInt()
+    check('amount', 'Amount is required and must be an integer').isInt(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -109,14 +105,15 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, description, url, amount } = req.body;
+    const { name, description, url, amount, image } = req.body;
 
     const newProject = new Project({
       user: req.user.id,
       name,
       description,
       url,
-      amount
+      amount,
+      image,
     });
 
     try {
@@ -140,26 +137,26 @@ router.put('/testcase/pass/:id/:testcase_id', auth, async (req, res) => {
     }
 
     let index = project.testCases
-      .map(item => item._id)
+      .map((item) => item._id)
       .indexOf(req.params.testcase_id);
 
     if (index === -1) {
       return res.status(400).json({ msg: 'Test case does not exist' });
     }
 
-    project.testCases.map(testcase => {
+    project.testCases.map((testcase) => {
       if (testcase._id.toString() === req.params.testcase_id) {
         index = testcase.actualResults
-          .map(item => item.user)
+          .map((item) => item.user)
           .indexOf(req.user.id);
 
         if (index === -1) {
           testcase.actualResults.push({
             user: req.user.id,
-            status: true
+            status: true,
           });
         } else {
-          testcase.actualResults.map(item => {
+          testcase.actualResults.map((item) => {
             if (item.user.toString() === req.user.id) {
               item.status = true;
             }
@@ -189,26 +186,26 @@ router.put('/testcase/fail/:id/:testcase_id', auth, async (req, res) => {
     }
 
     let index = project.testCases
-      .map(item => item._id)
+      .map((item) => item._id)
       .indexOf(req.params.testcase_id);
 
     if (index === -1) {
       return res.status(400).json({ msg: 'Test case does not exist' });
     }
 
-    project.testCases.map(testcase => {
+    project.testCases.map((testcase) => {
       if (testcase._id.toString() === req.params.testcase_id) {
         index = testcase.actualResults
-          .map(item => item.user)
+          .map((item) => item.user)
           .indexOf(req.user.id);
 
         if (index === -1) {
           testcase.actualResults.push({
             user: req.user.id,
-            status: false
+            status: false,
           });
         } else {
-          testcase.actualResults.map(item => {
+          testcase.actualResults.map((item) => {
             if (item.user.toString() === req.user.id) {
               item.status = false;
             }
@@ -233,15 +230,9 @@ router.put(
   '/testcase/:id',
   [
     auth,
-    check('name', 'Name is required')
-      .not()
-      .isEmpty(),
-    check('description', 'Description is required')
-      .not()
-      .isEmpty(),
-    check('expectedResult', 'Expected result is required')
-      .not()
-      .isEmpty()
+    check('name', 'Name is required').not().isEmpty(),
+    check('description', 'Description is required').not().isEmpty(),
+    check('expectedResult', 'Expected result is required').not().isEmpty(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -261,7 +252,7 @@ router.put(
       project.testCases.push({
         name,
         description,
-        expectedResult
+        expectedResult,
       });
 
       await project.save();
@@ -284,7 +275,7 @@ router.put('/finish/:id', auth, async (req, res) => {
       return res.status(400).json({ msg: 'Project does not exist' });
     }
 
-    project.testers.map(item => {
+    project.testers.map((item) => {
       if (item.user.toString() === req.user.id) {
         item.status = true;
       }
@@ -303,12 +294,7 @@ router.put('/finish/:id', auth, async (req, res) => {
 // @access  Private
 router.put(
   '/comment/:id',
-  [
-    auth,
-    check('description', 'Description is required')
-      .not()
-      .isEmpty()
-  ],
+  [auth, check('description', 'Description is required').not().isEmpty()],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -322,7 +308,7 @@ router.put(
 
       project.comments.unshift({
         user: req.user.id,
-        description
+        description,
       });
 
       project.populate('comments.user', ['name', 'avatar'], (err, res) => {
@@ -347,9 +333,7 @@ router.put(
   [
     auth,
     check('amount', 'Amount is required and must be an integer').isInt(),
-    check('paymentMethodId', 'Payment method ID is required')
-      .not()
-      .isEmpty()
+    check('paymentMethodId', 'Payment method ID is required').not().isEmpty(),
   ],
   async (req, res) => {
     try {
@@ -366,7 +350,9 @@ router.put(
         return res.status(400).json({ msg: 'Project does not exist' });
       }
 
-      const index = project.offers.map(item => item.user).indexOf(req.user.id);
+      const index = project.offers
+        .map((item) => item.user)
+        .indexOf(req.user.id);
 
       if (index !== -1) {
         return res.status(400).json({ msg: 'Offer already sent' });
@@ -374,14 +360,14 @@ router.put(
 
       const paymentIntent = await stripe.paymentIntents.create({
         amount: amount * 100,
-        currency: 'usd'
+        currency: 'usd',
       });
 
       project.offers.push({
         user: req.user.id,
         amount,
         clientSecret: paymentIntent.client_secret,
-        paymentMethodId
+        paymentMethodId,
       });
 
       project.populate('offers.user', ['name', 'avatar'], (err, res) => {
@@ -419,7 +405,7 @@ router.put('/:id/:user_id', auth, async (req, res) => {
     }
 
     const index = project.testers
-      .map(item => item.user)
+      .map((item) => item.user)
       .indexOf(req.params.user_id);
 
     if (index !== -1) {
@@ -447,14 +433,10 @@ router.put(
   '/:id',
   [
     auth,
-    check('name', 'Name is required')
-      .not()
-      .isEmpty(),
-    check('description', 'Description is required')
-      .not()
-      .isEmpty(),
+    check('name', 'Name is required').not().isEmpty(),
+    check('description', 'Description is required').not().isEmpty(),
     check('url', 'URL is required and must be valid').isURL(),
-    check('amount', 'Amount is required and must be an integer').isInt()
+    check('amount', 'Amount is required and must be an integer').isInt(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -473,7 +455,7 @@ router.put(
         return res.status(401).json({ msg: 'Not authorized' });
       }
 
-      const { name, description, url, amount } = req.body;
+      const { name, description, url, amount, image } = req.body;
 
       project = await Project.findOneAndUpdate(
         { _id: req.params.id },
@@ -482,8 +464,9 @@ router.put(
             name,
             description,
             url,
-            amount
-          }
+            amount,
+            image,
+          },
         },
         { new: true }
       );
@@ -511,7 +494,7 @@ router.delete('/offer/:id/:offer_id', auth, async (req, res) => {
     }
 
     const index = project.offers
-      .map(item => item._id)
+      .map((item) => item._id)
       .indexOf(req.params.offer_id);
 
     if (index === -1) {
@@ -545,7 +528,7 @@ router.delete('/testcase/:id/:testcase_id', auth, async (req, res) => {
     }
 
     const index = project.testCases
-      .map(item => item._id)
+      .map((item) => item._id)
       .indexOf(req.params.testcase_id);
 
     if (index === -1) {
@@ -574,7 +557,7 @@ router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
     const project = await Project.findOne({ _id: req.params.id });
 
     const removeIndex = project.comments
-      .map(item => item.id)
+      .map((item) => item.id)
       .indexOf(req.params.comment_id);
 
     if (removeIndex === -1) {
@@ -582,7 +565,7 @@ router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
     }
 
     const comment = project.comments.find(
-      comment => comment.id === req.params.comment_id
+      (comment) => comment.id === req.params.comment_id
     );
 
     project.comments.splice(removeIndex, 1);

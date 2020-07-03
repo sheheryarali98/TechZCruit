@@ -10,17 +10,18 @@ import {
   REVIEW_REMOVED_PRODUCT,
   PRODUCT_LIKED,
   PRODUCT_UNLIKED,
-  All_PRODUCTS_LOADED
+  All_PRODUCTS_LOADED,
+  SET_PRODUCT_LOADING,
 } from '../../actions/types';
 
 const initialState = {
   product: null,
   loading: true,
   errors: null,
-  products: []
+  products: [],
 };
 
-export default function(state = initialState, action) {
+export default function (state = initialState, action) {
   const { type, payload } = action;
 
   switch (type) {
@@ -30,14 +31,14 @@ export default function(state = initialState, action) {
         ...state,
         loading: false,
         errors: null,
-        products: payload
+        products: payload,
       };
     case PRODUCT_CREATED:
       return {
         ...state,
         loading: false,
         errors: null,
-        products: [...state.products, payload]
+        products: [...state.products, payload],
       };
     case PRODUCT_LOADED:
     case PRODUCT_UPDATED:
@@ -45,7 +46,7 @@ export default function(state = initialState, action) {
         ...state,
         product: payload,
         loading: false,
-        errors: null
+        errors: null,
       };
     case REVIEW_ADDED_PRODUCT:
     case REVIEW_REMOVED_PRODUCT:
@@ -53,20 +54,20 @@ export default function(state = initialState, action) {
         ...state,
         loading: false,
         errors: null,
-        product: { ...state.product, reviews: payload.reviews }
+        product: { ...state.product, reviews: payload.reviews },
       };
     case PRODUCT_ERROR:
       return {
         ...state,
         loading: false,
-        errors: payload
+        errors: payload,
       };
     case PRODUCT_PURCHASED:
       return {
         ...state,
         product: { ...state.product, sales: payload.sales },
         loading: false,
-        errors: null
+        errors: null,
       };
     case PRODUCT_LIKED:
     case PRODUCT_UNLIKED:
@@ -74,14 +75,21 @@ export default function(state = initialState, action) {
         ...state,
         loading: false,
         errors: null,
-        product: { ...state.product, likes: payload.likes }
+        product: { ...state.product, likes: payload.likes },
       };
     case PRODUCT_REMOVED:
       return {
         ...state,
         loading: false,
         errors: null,
-        products: [...state.products.filter(product => product._id !== payload)]
+        products: [
+          ...state.products.filter((product) => product._id !== payload),
+        ],
+      };
+    case SET_PRODUCT_LOADING:
+      return {
+        ...state,
+        loading: true,
       };
     default:
       return state;

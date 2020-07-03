@@ -38,7 +38,7 @@ router.get('/search/:description', auth, async (req, res) => {
 
   try {
     const stores = await Store.find({
-      name: new RegExp(description, 'i')
+      name: new RegExp(description, 'i'),
     });
 
     res.send(stores);
@@ -67,12 +67,8 @@ router.post(
   '/',
   [
     auth,
-    check('name', 'Name is required')
-      .not()
-      .isEmpty(),
-    check('description', 'Description is required')
-      .not()
-      .isEmpty()
+    check('name', 'Name is required').not().isEmpty(),
+    check('description', 'Description is required').not().isEmpty(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -80,12 +76,13 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, description } = req.body;
+    const { name, description, image } = req.body;
 
     const store = new Store({
       user: req.user.id,
       name,
-      description
+      description,
+      image,
     });
 
     try {
@@ -105,12 +102,8 @@ router.put(
   '/:id',
   [
     auth,
-    check('name', 'Name is required')
-      .not()
-      .isEmpty(),
-    check('description', 'Description is required')
-      .not()
-      .isEmpty()
+    check('name', 'Name is required').not().isEmpty(),
+    check('description', 'Description is required').not().isEmpty(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -129,15 +122,16 @@ router.put(
         return res.status(401).json({ msg: 'Not authorized' });
       }
 
-      const { name, description } = req.body;
+      const { name, description, image } = req.body;
 
       store = await Store.findOneAndUpdate(
         { _id: req.params.id },
         {
           $set: {
             name,
-            description
-          }
+            description,
+            image,
+          },
         },
         { new: true }
       );

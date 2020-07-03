@@ -11,17 +11,18 @@ import {
   SERVICE_UPDATED,
   SERVICE_REQUEST_REMOVED,
   SERVICE_SERVICE_ADDED,
-  SERVICE_SERVICE_FINISHED
+  SERVICE_SERVICE_FINISHED,
+  SET_SERVICE_LOADING,
 } from '../../actions/types';
 
 const initialState = {
   service: null,
   loading: true,
   errors: null,
-  services: []
+  services: [],
 };
 
-export default function(state = initialState, action) {
+export default function (state = initialState, action) {
   const { type, payload } = action;
 
   switch (type) {
@@ -31,7 +32,7 @@ export default function(state = initialState, action) {
         ...state,
         loading: false,
         errors: null,
-        services: payload
+        services: payload,
       };
     case SERVICE_LOADED:
     case SERVICE_UPDATED:
@@ -39,21 +40,21 @@ export default function(state = initialState, action) {
         ...state,
         loading: false,
         errors: null,
-        service: payload
+        service: payload,
       };
     case SERVICE_CREATED:
       return {
         ...state,
         loading: false,
         errors: null,
-        services: [...state.services, payload]
+        services: [...state.services, payload],
       };
     case SERVICE_REMOVED:
       return {
         ...state,
         loading: false,
         errors: null,
-        services: [...state.services.filter(item => item._id !== payload)]
+        services: [...state.services.filter((item) => item._id !== payload)],
       };
     case REVIEW_ADDED_SERVICE:
     case REVIEW_REMOVED_SERVICE:
@@ -61,7 +62,7 @@ export default function(state = initialState, action) {
         ...state,
         loading: false,
         errors: null,
-        service: { ...state.service, reviews: payload.reviews }
+        service: { ...state.service, reviews: payload.reviews },
       };
     case SERVICE_REQUEST_SENT:
     case SERVICE_REQUEST_REMOVED:
@@ -69,7 +70,7 @@ export default function(state = initialState, action) {
         ...state,
         loading: false,
         errors: null,
-        service: { ...state.service, requests: payload.requests }
+        service: { ...state.service, requests: payload.requests },
       };
     case SERVICE_SERVICE_ADDED:
     case SERVICE_SERVICE_FINISHED:
@@ -77,13 +78,18 @@ export default function(state = initialState, action) {
         ...state,
         loading: false,
         errors: null,
-        service: { ...state.service, services: payload.services }
+        service: { ...state.service, services: payload.services },
       };
     case SERVICE_ERROR:
       return {
         ...state,
         loading: false,
-        errors: payload
+        errors: payload,
+      };
+    case SET_SERVICE_LOADING:
+      return {
+        ...state,
+        loading: true,
       };
     default:
       return state;

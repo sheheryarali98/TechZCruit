@@ -13,6 +13,8 @@ import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
 import { toggleSideNav } from '../../../actions/auth';
 import windowSize from 'react-window-size';
+import Spinner from '../../layout/Spinner';
+import placeholder from '../../../img/placeholder.png';
 
 const EditProduct = ({
   history,
@@ -29,12 +31,23 @@ const EditProduct = ({
     description: '',
     category: '',
     price: '',
+    image: '',
   });
 
-  const { title, description, category, price } = formData;
+  const { title, description, category, price, image } = formData;
 
   const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleImageChange = (e) => {
+    if (e.target.files.length > 0) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setFormData({ ...formData, image: e.target.result });
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
   };
 
   const onSubmit = (e) => {
@@ -42,21 +55,29 @@ const EditProduct = ({
     updateProduct(match.params.id, match.params.product_id, formData, history);
   };
 
+  const [getProductByIdCalled, setGetProductByIdCalled] = useState(false);
+
   useEffect(() => {
-    getProductById(match.params.product_id);
+    if (!getProductByIdCalled) {
+      getProductById(match.params.product_id);
+      setGetProductByIdCalled(true);
+    }
 
     setFormData({
       title: !loading && product.title ? product.title : '',
       description: !loading && product.description ? product.description : '',
       category: !loading && product.category ? product.category : '',
       price: !loading && product.price ? product.price : '',
+      image: !loading && product.image ? product.image : '',
     });
 
     toggleSideNav(windowWidth >= 576);
     // eslint-disable-next-line
-  }, [getProductById, loading, toggleSideNav]);
+  }, [product, windowWidth]);
 
-  return (
+  return loading ? (
+    <Spinner />
+  ) : (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />
@@ -73,7 +94,30 @@ const EditProduct = ({
           <div className={styles.sub_heading}>
             Fill in the following information to edit the product for the store
           </div>
+          <div style={{ textAlign: 'center' }}>
+            <img
+              src={image === '' ? placeholder : image}
+              alt=''
+              style={{ width: '400px', height: '400px', marginBottom: '10px' }}
+            />
+          </div>
           <Form onSubmit={(e) => onSubmit(e)}>
+            <Form.Group>
+              <Form.Control
+                type='file'
+                onChange={(e) => {
+                  handleImageChange(e);
+                  e.target.value = '';
+                }}
+              />
+              <Button
+                variant='danger'
+                style={{ marginTop: '10px' }}
+                onClick={() => setFormData({ ...formData, image: '' })}
+              >
+                Remove image
+              </Button>
+            </Form.Group>
             <Form.Group>
               <Form.Control
                 type='text'

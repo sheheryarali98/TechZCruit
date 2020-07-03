@@ -3,76 +3,79 @@ const mongoose = require('mongoose');
 const ServiceSchema = mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'user'
+    ref: 'user',
   },
   title: {
     type: String,
-    required: true
+    required: true,
   },
   description: {
     type: String,
-    required: true
+    required: true,
   },
   amount: {
     type: Number,
-    required: true
+    required: true,
+  },
+  image: {
+    type: String,
   },
   requests: [
     {
       user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'user'
+        ref: 'user',
       },
       description: {
         type: String,
-        required: true
+        required: true,
       },
       amount: {
         type: Number,
-        required: true
+        required: true,
       },
       clientSecret: {
         type: String,
-        required: true
+        required: true,
       },
       paymentMethodId: {
         type: String,
-        required: true
-      }
-    }
+        required: true,
+      },
+    },
   ],
   services: [
     {
       user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'user'
+        ref: 'user',
       },
       description: {
         type: String,
-        required: true
+        required: true,
       },
       status: {
         type: Boolean,
-        default: false
-      }
-    }
+        default: false,
+      },
+    },
   ],
   reviews: [
     {
       user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'user'
+        ref: 'user',
       },
       description: {
         type: String,
-        required: true
+        required: true,
       },
       rating: {
         type: Number,
-        required: true
-      }
-    }
-  ]
+        required: true,
+      },
+    },
+  ],
 });
 
 module.exports = Service = mongoose.model('service', ServiceSchema);

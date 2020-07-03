@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { getAllGroupsForUser } from '../../../actions/community/group';
 import PropTypes from 'prop-types';
@@ -10,6 +10,7 @@ import Footer from '../../layout/Footer';
 import styles from '../../../css/community/my-groups/style.module.css';
 import { toggleSideNav } from '../../../actions/auth';
 import windowSize from 'react-window-size';
+import Spinner from '../../layout/Spinner';
 
 const MyGroups = ({
   getAllGroupsForUser,
@@ -18,14 +19,23 @@ const MyGroups = ({
   windowWidth,
   auth: { displaySideNav },
 }) => {
+  const [getAllGroupForUserCalled, setGetAllGroupForUserCalled] = useState(
+    false
+  );
+
   useEffect(() => {
-    getAllGroupsForUser();
+    if (!getAllGroupForUserCalled) {
+      getAllGroupsForUser();
+      setGetAllGroupForUserCalled(true);
+    }
 
     toggleSideNav(windowWidth >= 576);
     // eslint-disable-next-line
-  }, [getAllGroupsForUser, toggleSideNav]);
+  }, [groups, windowWidth]);
 
-  return (
+  return loading ? (
+    <Spinner />
+  ) : (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />

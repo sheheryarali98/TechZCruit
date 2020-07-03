@@ -27,9 +27,7 @@ router.post(
   '/',
   [
     check('email', 'Please include a valid email').isEmail(),
-    check('password', 'Password is required')
-      .not()
-      .isEmpty()
+    check('password', 'Password is required').not().isEmpty(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -58,15 +56,15 @@ router.post(
 
       const payload = {
         user: {
-          id: user.id
-        }
+          id: user.id,
+        },
       };
 
       jwt.sign(
         payload,
         config.get('jwtSecret'),
         {
-          expiresIn: 3600
+          expiresIn: 86400,
         },
         (err, token) => {
           if (err) throw err;

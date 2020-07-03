@@ -2,17 +2,16 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Col, Card } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import placeholder from '../../../img/placeholder.png';
 
 const CampaignItem = ({
-  campaign: { _id, title, description, supporters, fundsRequired },
+  campaign: { _id, title, description, supporters, fundsRequired, image },
   styles,
 }) => {
   return (
     <Fragment>
       <Col xs={12} md={4} lg={3}>
         <Card className={styles.card}>
-          <Card.Img variant='top' src={placeholder} />
+          <Card.Img variant='top' src={image} />
           <Card.Body>
             <Card.Title className={`${styles.card_title} text-truncate`}>
               <Link

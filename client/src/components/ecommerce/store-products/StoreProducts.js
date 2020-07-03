@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Table } from 'react-bootstrap';
 import { connect } from 'react-redux';
@@ -12,6 +12,7 @@ import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
 import { toggleSideNav } from '../../../actions/auth';
 import windowSize from 'react-window-size';
+import Spinner from '../../layout/Spinner';
 
 const StoreProducts = ({
   product: { loading, products },
@@ -22,12 +23,20 @@ const StoreProducts = ({
   windowWidth,
   auth: { displaySideNav },
 }) => {
+  const [
+    getAllProductsForStoreCalled,
+    setGetAllProductsForStoreCalled,
+  ] = useState(false);
+
   useEffect(() => {
-    getAllProductsForStore(match.params.id);
+    if (!getAllProductsForStoreCalled) {
+      getAllProductsForStore(match.params.id);
+      setGetAllProductsForStoreCalled(true);
+    }
 
     toggleSideNav(windowWidth >= 576);
     // eslint-disable-next-line
-  }, [getAllProductsForStore, match.params.id, toggleSideNav]);
+  }, [products, windowWidth]);
 
   const getCategory = (category) => {
     switch (category) {
@@ -52,7 +61,9 @@ const StoreProducts = ({
     }
   };
 
-  return (
+  return loading ? (
+    <Spinner />
+  ) : (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />

@@ -39,7 +39,7 @@ router.get('/search/:description', auth, async (req, res) => {
 
   try {
     const services = await Service.find({
-      title: new RegExp(description, 'i')
+      title: new RegExp(description, 'i'),
     });
 
     res.send(services);
@@ -54,7 +54,7 @@ router.get('/search/:description', auth, async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const service = await Service.findOne({
-      _id: req.params.id
+      _id: req.params.id,
     })
       .populate('user', ['name', 'avatar'])
       .populate('requests.user', ['name', 'avatar'])
@@ -74,13 +74,9 @@ router.post(
   '/',
   [
     auth,
-    check('title', 'Title is required')
-      .not()
-      .isEmpty(),
-    check('description', 'Description is required')
-      .not()
-      .isEmpty(),
-    check('amount', 'Amount is required').isInt()
+    check('title', 'Title is required').not().isEmpty(),
+    check('description', 'Description is required').not().isEmpty(),
+    check('amount', 'Amount is required').isInt(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -88,14 +84,15 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { title, description, amount } = req.body;
+    const { title, description, amount, image } = req.body;
 
     try {
       const service = new Service({
         user: req.user.id,
         title,
         description,
-        amount
+        amount,
+        image,
       });
 
       await service.save();
@@ -122,7 +119,7 @@ router.put('/finish/:id/:service_id', auth, async (req, res) => {
       return res.status(401).json({ msg: 'Not authorized' });
     }
 
-    service.services.map(item => {
+    service.services.map((item) => {
       if (item._id.toString() === req.params.service_id) {
         item.status = true;
       }
@@ -149,9 +146,7 @@ router.put(
   [
     auth,
     check('rating', 'Rating is required').isInt(),
-    check('description', 'Description is required')
-      .not()
-      .isEmpty()
+    check('description', 'Description is required').not().isEmpty(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -167,7 +162,7 @@ router.put(
       service.reviews.unshift({
         user: req.user.id,
         description,
-        rating
+        rating,
       });
 
       service.populate('reviews.user', ['name', 'avatar'], (err, res) => {
@@ -191,13 +186,9 @@ router.put(
   '/request/:id',
   [
     auth,
-    check('description', 'Description is required')
-      .not()
-      .isEmpty(),
+    check('description', 'Description is required').not().isEmpty(),
     check('amount', 'Amount is required and must be an integer').isInt(),
-    check('paymentMethodId', 'Payment method ID is required')
-      .not()
-      .isEmpty()
+    check('paymentMethodId', 'Payment method ID is required').not().isEmpty(),
   ],
   async (req, res) => {
     try {
@@ -216,7 +207,7 @@ router.put(
 
       const paymentIntent = await stripe.paymentIntents.create({
         amount: amount * 100,
-        currency: 'usd'
+        currency: 'usd',
       });
 
       service.requests.push({
@@ -224,7 +215,7 @@ router.put(
         description,
         amount,
         clientSecret: paymentIntent.client_secret,
-        paymentMethodId
+        paymentMethodId,
       });
 
       service.populate('requests.user', ['name', 'avatar'], (err, res) => {
@@ -256,7 +247,7 @@ router.put('/:id/:request_id', auth, async (req, res) => {
     }
 
     const index = service.requests
-      .map(item => item._id)
+      .map((item) => item._id)
       .indexOf(req.params.request_id);
 
     if (index === -1) {
@@ -267,7 +258,7 @@ router.put('/:id/:request_id', auth, async (req, res) => {
 
     service.services.push({
       user: request.user,
-      description: request.description
+      description: request.description,
     });
 
     service.populate('services.user', ['name', 'avatar'], (err, res) => {
@@ -289,13 +280,9 @@ router.put(
   '/:id',
   [
     auth,
-    check('title', 'Title is required')
-      .not()
-      .isEmpty(),
-    check('description', 'Description is required')
-      .not()
-      .isEmpty(),
-    check('amount', 'Amount is required').isInt()
+    check('title', 'Title is required').not().isEmpty(),
+    check('description', 'Description is required').not().isEmpty(),
+    check('amount', 'Amount is required').isInt(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -314,7 +301,7 @@ router.put(
         return res.status(401).json({ msg: 'Not authorized' });
       }
 
-      const { title, description, amount } = req.body;
+      const { title, description, amount, image } = req.body;
 
       service = await Service.findOneAndUpdate(
         { _id: req.params.id },
@@ -322,8 +309,9 @@ router.put(
           $set: {
             title,
             description,
-            amount
-          }
+            amount,
+            image,
+          },
         },
         { new: true }
       );
@@ -344,7 +332,7 @@ router.delete('/review/:id/:review_id', auth, async (req, res) => {
     const service = await Service.findById({ _id: req.params.id });
 
     const removeIndex = service.reviews
-      .map(item => item.id)
+      .map((item) => item.id)
       .indexOf(req.params.review_id);
 
     if (removeIndex === -1) {
@@ -382,7 +370,7 @@ router.delete('/request/:id/:request_id', auth, async (req, res) => {
     }
 
     const index = service.requests
-      .map(item => item._id)
+      .map((item) => item._id)
       .indexOf(req.params.request_id);
 
     if (index === -1) {

@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { getAllConversationsForCurrentUser } from '../../../actions/chat/conversation';
@@ -9,6 +9,7 @@ import SideNav from '../../layout/SideNav';
 import MyConversationItem from './MyConversationItem';
 import { toggleSideNav } from '../../../actions/auth';
 import windowSize from 'react-window-size';
+import Spinner from '../../layout/Spinner';
 
 const MyConversations = ({
   conversation: { loading, conversations },
@@ -17,14 +18,24 @@ const MyConversations = ({
   toggleSideNav,
   windowWidth,
 }) => {
+  const [
+    getAllConversationForCurrentUserCalled,
+    setGetAllConversationForCurrentUserCalled,
+  ] = useState(false);
+
   useEffect(() => {
-    getAllConversationsForCurrentUser();
+    if (!getAllConversationForCurrentUserCalled) {
+      getAllConversationsForCurrentUser();
+      setGetAllConversationForCurrentUserCalled(true);
+    }
 
     toggleSideNav(windowWidth >= 576);
     // eslint-disable-next-line
-  }, [getAllConversationsForCurrentUser, toggleSideNav]);
+  }, [conversations, windowWidth]);
 
-  return (
+  return loading ? (
+    <Spinner />
+  ) : (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />

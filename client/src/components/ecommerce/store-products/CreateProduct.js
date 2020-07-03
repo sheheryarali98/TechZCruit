@@ -10,6 +10,7 @@ import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
 import { toggleSideNav } from '../../../actions/auth';
 import windowSize from 'react-window-size';
+import placeholder from '../../../img/placeholder.png';
 
 const CreateProduct = ({
   history,
@@ -28,12 +29,23 @@ const CreateProduct = ({
     description: '',
     category: '',
     price: '',
+    image: '',
   });
 
-  const { title, description, category, price } = formData;
+  const { title, description, category, price, image } = formData;
 
   const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleImageChange = (e) => {
+    if (e.target.files.length > 0) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setFormData({ ...formData, image: e.target.result });
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
   };
 
   const onSubmit = (e) => {
@@ -59,7 +71,30 @@ const CreateProduct = ({
             Fill in the following information to create a new product for the
             store
           </div>
+          <div style={{ textAlign: 'center' }}>
+            <img
+              src={image === '' ? placeholder : image}
+              alt=''
+              style={{ width: '400px', height: '400px', marginBottom: '10px' }}
+            />
+          </div>
           <Form onSubmit={(e) => onSubmit(e)}>
+            <Form.Group>
+              <Form.Control
+                type='file'
+                onChange={(e) => {
+                  handleImageChange(e);
+                  e.target.value = '';
+                }}
+              />
+              <Button
+                variant='danger'
+                style={{ marginTop: '10px' }}
+                onClick={() => setFormData({ ...formData, image: '' })}
+              >
+                Remove image
+              </Button>
+            </Form.Group>
             <Form.Group>
               <Form.Control
                 type='text'

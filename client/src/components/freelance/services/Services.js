@@ -13,6 +13,7 @@ import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
 import { toggleSideNav } from '../../../actions/auth';
 import windowSize from 'react-window-size';
+import Spinner from '../../layout/Spinner';
 
 const Services = ({
   service: { loading, services },
@@ -22,12 +23,17 @@ const Services = ({
   windowWidth,
   auth: { displaySideNav },
 }) => {
+  const [getAllServicesCalled, setGetAllServicesCalled] = useState(false);
+
   useEffect(() => {
-    getAllServices();
+    if (!getAllServicesCalled) {
+      getAllServices();
+      setGetAllServicesCalled(true);
+    }
 
     toggleSideNav(windowWidth >= 576);
     // eslint-disable-next-line
-  }, [getAllServices, toggleSideNav]);
+  }, [services, windowWidth]);
 
   const [formData, setFormData] = useState({
     description: '',
@@ -48,7 +54,9 @@ const Services = ({
     }
   };
 
-  return (
+  return loading ? (
+    <Spinner />
+  ) : (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />

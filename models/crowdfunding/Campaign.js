@@ -3,52 +3,55 @@ const mongoose = require('mongoose');
 const CampaignSchema = mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'user'
+    ref: 'user',
   },
   title: {
     type: String,
-    required: true
+    required: true,
   },
   description: {
     type: String,
-    required: true
+    required: true,
+  },
+  image: {
+    type: String,
   },
   category: {
     type: Number,
-    required: true
+    required: true,
   },
   fundsRequired: {
     type: Number,
-    required: true
+    required: true,
   },
   completionDate: {
     type: Date,
-    required: true
+    required: true,
   },
   supporters: [
     {
       user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'user'
+        ref: 'user',
       },
       amount: {
         type: Number,
-        required: true
-      }
-    }
+        required: true,
+      },
+    },
   ],
   comments: [
     {
       user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'user'
+        ref: 'user',
       },
       description: {
         type: String,
-        required: true
-      }
-    }
-  ]
+        required: true,
+      },
+    },
+  ],
 });
 
 module.exports = Campaign = mongoose.model('campaign', CampaignSchema);

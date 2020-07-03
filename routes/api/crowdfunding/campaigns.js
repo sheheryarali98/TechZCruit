@@ -39,7 +39,7 @@ router.get('/search/:description', auth, async (req, res) => {
 
   try {
     const campaigns = await Campaign.find({
-      title: new RegExp(description, 'i')
+      title: new RegExp(description, 'i'),
     });
 
     res.send(campaigns);
@@ -54,7 +54,7 @@ router.get('/search/:description', auth, async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const campaign = await Campaign.findOne({
-      _id: req.params.id
+      _id: req.params.id,
     })
       .populate('user', ['name', 'avatar'])
       .populate('comments.user', ['name', 'avatar'])
@@ -73,21 +73,11 @@ router.post(
   '/',
   [
     auth,
-    check('title', 'Title is required')
-      .not()
-      .isEmpty(),
-    check('description', 'Description is required')
-      .not()
-      .isEmpty(),
-    check('category', 'Category is required')
-      .not()
-      .isEmpty(),
-    check('fundsRequired', 'Required funds not mentioned')
-      .not()
-      .isEmpty(),
-    check('completionDate', 'Completion date not mentioned')
-      .not()
-      .isEmpty()
+    check('title', 'Title is required').not().isEmpty(),
+    check('description', 'Description is required').not().isEmpty(),
+    check('category', 'Category is required').not().isEmpty(),
+    check('fundsRequired', 'Required funds not mentioned').not().isEmpty(),
+    check('completionDate', 'Completion date not mentioned').not().isEmpty(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -100,7 +90,8 @@ router.post(
       description,
       category,
       fundsRequired,
-      completionDate
+      completionDate,
+      image,
     } = req.body;
 
     try {
@@ -110,7 +101,8 @@ router.post(
         description,
         category,
         fundsRequired,
-        completionDate
+        completionDate,
+        image,
       });
 
       await campaign.save();
@@ -127,12 +119,7 @@ router.post(
 // @access  Private
 router.put(
   '/support/:id',
-  [
-    auth,
-    check('amount', 'Amount is required')
-      .not()
-      .isEmpty()
-  ],
+  [auth, check('amount', 'Amount is required').not().isEmpty()],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -146,19 +133,19 @@ router.put(
 
       campaign.supporters.unshift({
         user: req.user.id,
-        amount
+        amount,
       });
 
       await campaign.save();
 
       const paymentIntent = await stripe.paymentIntents.create({
         amount: amount * 100,
-        currency: 'usd'
+        currency: 'usd',
       });
 
       res.json({
         campaign: campaign,
-        clientSecret: paymentIntent.client_secret
+        clientSecret: paymentIntent.client_secret,
       });
     } catch (err) {
       return res.status(500).send('Server error');
@@ -171,12 +158,7 @@ router.put(
 // @access  Private
 router.put(
   '/comment/:id',
-  [
-    auth,
-    check('description', 'Description is required')
-      .not()
-      .isEmpty()
-  ],
+  [auth, check('description', 'Description is required').not().isEmpty()],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -190,7 +172,7 @@ router.put(
 
       campaign.comments.unshift({
         user: req.user.id,
-        description
+        description,
       });
 
       campaign.populate('comments.user', ['name', 'avatar'], (err, res) => {
@@ -214,21 +196,11 @@ router.put(
   '/:id',
   [
     auth,
-    check('title', 'Title is required')
-      .not()
-      .isEmpty(),
-    check('description', 'Description is required')
-      .not()
-      .isEmpty(),
-    check('category', 'Category is required')
-      .not()
-      .isEmpty(),
-    check('fundsRequired', 'Required funds not mentioned')
-      .not()
-      .isEmpty(),
-    check('completionDate', 'Completion date not mentioned')
-      .not()
-      .isEmpty()
+    check('title', 'Title is required').not().isEmpty(),
+    check('description', 'Description is required').not().isEmpty(),
+    check('category', 'Category is required').not().isEmpty(),
+    check('fundsRequired', 'Required funds not mentioned').not().isEmpty(),
+    check('completionDate', 'Completion date not mentioned').not().isEmpty(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -252,7 +224,8 @@ router.put(
         description,
         category,
         fundsRequired,
-        completionDate
+        completionDate,
+        image,
       } = req.body;
 
       campaign = await Campaign.findOneAndUpdate(
@@ -263,8 +236,9 @@ router.put(
             description,
             category,
             fundsRequired,
-            completionDate
-          }
+            completionDate,
+            image,
+          },
         },
         { new: true }
       );
@@ -290,7 +264,7 @@ router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
     const campaign = await Campaign.findOne({ _id: req.params.id });
 
     const removeIndex = campaign.comments
-      .map(item => item.id)
+      .map((item) => item.id)
       .indexOf(req.params.comment_id);
 
     if (removeIndex === -1) {
@@ -298,7 +272,7 @@ router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
     }
 
     const comment = campaign.comments.find(
-      comment => comment.id === req.params.comment_id
+      (comment) => comment.id === req.params.comment_id
     );
 
     campaign.comments.splice(removeIndex, 1);

@@ -28,10 +28,8 @@ const Landing = () => {
                 <Link to='/community'>Community</Link>
               </strong>
               <div>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Laborum
-                quae consectetur adipisci corporis, dolorum laudantium nostrum
-                veniam voluptates quas cupiditate architecto rerum excepturi
-                reiciendis quos necessitatibus magni at optio officia.
+                Become a part of the community to share your thoughts and ideas
+                with other people and learn about other's opinions as well.
               </div>
             </Col>
             <Col xs={12} md={5} className={styles.service}>
@@ -42,10 +40,8 @@ const Landing = () => {
                 <Link to='/crowdfunding'>Crowdfunding</Link>
               </strong>
               <div>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Repellendus consectetur magnam tempora recusandae, esse,
-                doloribus dignissimos, fugit sint enim expedita nam in
-                laboriosam ea exercitationem ullam voluptas quas soluta dolores!
+                Receive funding for your own creative ideas or learn about other
+                peoples inventions and support them in their journey
               </div>
             </Col>
             <Col xs={12} md={5} className={styles.service}>
@@ -56,10 +52,9 @@ const Landing = () => {
                 <Link to='/testing'>Product Testing</Link>
               </strong>
               <div>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam
-                est voluptate, voluptatibus provident nulla, voluptatem eligendi
-                at consectetur officiis, ullam aliquid. Dolores et omnis
-                reprehenderit quibusdam perspiciatis, eligendi hic quam!
+                Get your software product tested by other people in the
+                community or test the products that are already available by
+                other developers.
               </div>
             </Col>
             <Col xs={12} md={5} className={styles.service}>
@@ -70,10 +65,9 @@ const Landing = () => {
                 <Link to='/ecommerce'>E-commerce</Link>
               </strong>
               <div>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis
-                aut magnam labore quod repellendus, nesciunt reprehenderit ex
-                nostrum autem a praesentium tempora pariatur earum officia dolor
-                asperiores quasi ducimus itaque?
+                Create and sell your own custom made softwares and components or
+                purchase already made components and use them in your
+                application.
               </div>
             </Col>
             <Col xs={12} md={5} className={styles.service}>
@@ -84,10 +78,8 @@ const Landing = () => {
                 <Link to='/freelance'>Freelance Platform</Link>
               </strong>
               <div>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Assumenda dolorum tenetur aliquid! Optio facere odio, sequi
-                tenetur voluptates aperiam voluptatem nihil cum, iste quibusdam
-                dolore, obcaecati exercitationem eaque quisquam! Tenetur!
+                Acquire services from other freelancers in the community or
+                offer your own services to the community.
               </div>
             </Col>
           </Row>

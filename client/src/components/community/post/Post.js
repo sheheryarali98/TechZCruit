@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -12,6 +12,7 @@ import Footer from '../../layout/Footer';
 import styles from '../../../css/community/group/style.module.css';
 import { toggleSideNav } from '../../../actions/auth';
 import windowSize from 'react-window-size';
+import Spinner from '../../layout/Spinner';
 
 const Post = ({
   post: { post, loading },
@@ -21,14 +22,21 @@ const Post = ({
   toggleSideNav,
   windowWidth,
 }) => {
+  const [getPostByIdCalled, setGetPostByIdCalled] = useState(false);
+
   useEffect(() => {
-    getPostById(match.params.id);
+    if (!getPostByIdCalled) {
+      getPostById(match.params.id);
+      setGetPostByIdCalled(true);
+    }
 
     toggleSideNav(windowWidth >= 576);
     // eslint-disable-next-line
-  }, [getPostById, match.params.id, toggleSideNav]);
+  }, [post, windowWidth]);
 
-  return (
+  return loading ? (
+    <Spinner />
+  ) : (
     <Fragment>
       {!loading && post !== null && (
         <Fragment>

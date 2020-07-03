@@ -8,17 +8,18 @@ import {
   CAMPAIGN_UPDATED,
   CAMPAIGN_DELETED,
   COMMENT_REMOVED_CAMPAIGN,
-  CAMPAIGN_SUPPORTED
+  CAMPAIGN_SUPPORTED,
+  SET_CAMPAIGN_LOADING,
 } from '../../actions/types';
 
 const initialState = {
   campaign: null,
   loading: true,
   errors: null,
-  campaigns: []
+  campaigns: [],
 };
 
-export default function(state = initialState, action) {
+export default function (state = initialState, action) {
   const { type, payload } = action;
 
   switch (type) {
@@ -28,14 +29,14 @@ export default function(state = initialState, action) {
         ...state,
         campaigns: payload,
         loading: false,
-        errors: null
+        errors: null,
       };
     case CAMPAIGN_CREATED:
       return {
         ...state,
         campaigns: [...state.campaigns, payload],
         loading: false,
-        errors: null
+        errors: null,
       };
     case CAMPAIGN_LOADED:
     case CAMPAIGN_UPDATED:
@@ -43,7 +44,7 @@ export default function(state = initialState, action) {
         ...state,
         campaign: payload,
         loading: false,
-        errors: null
+        errors: null,
       };
     case CAMPAIGN_DELETED:
       return {
@@ -51,8 +52,8 @@ export default function(state = initialState, action) {
         loading: false,
         errors: null,
         campaigns: [
-          ...state.campaigns.filter(campaign => campaign._id !== payload)
-        ]
+          ...state.campaigns.filter((campaign) => campaign._id !== payload),
+        ],
       };
     case COMMENT_ADDED_CAMPAIGN:
     case COMMENT_REMOVED_CAMPAIGN:
@@ -60,20 +61,25 @@ export default function(state = initialState, action) {
         ...state,
         loading: false,
         errors: null,
-        campaign: { ...state.campaign, comments: payload.comments }
+        campaign: { ...state.campaign, comments: payload.comments },
       };
     case CAMPAIGN_ERROR:
       return {
         ...state,
         loading: false,
-        errors: payload
+        errors: payload,
       };
     case CAMPAIGN_SUPPORTED:
       return {
         ...state,
         loading: false,
         errors: null,
-        campaign: { ...state.campaign, supporters: payload.supporters }
+        campaign: { ...state.campaign, supporters: payload.supporters },
+      };
+    case SET_CAMPAIGN_LOADING:
+      return {
+        ...state,
+        loading: true,
       };
     default:
       return state;

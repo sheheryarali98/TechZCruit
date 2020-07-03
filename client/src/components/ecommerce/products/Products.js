@@ -13,6 +13,7 @@ import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
 import { toggleSideNav } from '../../../actions/auth';
 import windowSize from 'react-window-size';
+import Spinner from '../../layout/Spinner';
 
 const Products = ({
   getAllProducts,
@@ -22,12 +23,17 @@ const Products = ({
   windowWidth,
   auth: { displaySideNav },
 }) => {
+  const [getAllProductsCalled, setGetAllProductsCalled] = useState(false);
+
   useEffect(() => {
-    getAllProducts();
+    if (!getAllProductsCalled) {
+      getAllProducts();
+      setGetAllProductsCalled(true);
+    }
 
     toggleSideNav(windowWidth >= 576);
     // eslint-disable-next-line
-  }, [getAllProducts, toggleSideNav]);
+  }, [products, windowWidth]);
 
   const [formData, setFormData] = useState({
     description: '',
@@ -48,7 +54,9 @@ const Products = ({
     }
   };
 
-  return (
+  return loading ? (
+    <Spinner />
+  ) : (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />

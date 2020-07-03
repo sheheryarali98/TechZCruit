@@ -17,6 +17,7 @@ import { createConversation } from '../../../actions/chat/conversation';
 import { withRouter } from 'react-router-dom';
 import { toggleSideNav } from '../../../actions/auth';
 import windowSize from 'react-window-size';
+import Spinner from '../../layout/Spinner';
 
 const Project = ({
   project: { loading, project },
@@ -28,12 +29,17 @@ const Project = ({
   toggleSideNav,
   windowWidth,
 }) => {
+  const [getProjectByIdCalled, setGetProjectByIdCalled] = useState(false);
+
   useEffect(() => {
-    getProjectById(match.params.id);
+    if (!getProjectByIdCalled) {
+      getProjectById(match.params.id);
+      setGetProjectByIdCalled(true);
+    }
 
     toggleSideNav(windowWidth >= 576);
     // eslint-disable-next-line
-  }, [getProjectById, match.params.id, toggleSideNav]);
+  }, [project, windowWidth]);
 
   const [
     showCustomOfferPaymentModal,
@@ -62,7 +68,9 @@ const Project = ({
     history.push(`/conversation/${conversationId}`);
   };
 
-  return (
+  return loading ? (
+    <Spinner />
+  ) : (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />
@@ -115,7 +123,15 @@ const Project = ({
           </div>
           <Row className='my-3'>
             <Col xs={12} md={8}>
-              <img src={placeholder} alt='' className={styles.image} />
+              <img
+                src={
+                  !loading && project !== null && project.image
+                    ? project.image
+                    : placeholder
+                }
+                alt=''
+                className={styles.image}
+              />
             </Col>
             <Col className='p-3' xs={12} md={4}>
               <div>
@@ -155,7 +171,7 @@ const Project = ({
                     </div>
                     <div>
                       <Button
-                        variant='dark'
+                        variant='success'
                         className='mt-3'
                         onClick={() => toggleCustomOfferPaymentModal()}
                       >

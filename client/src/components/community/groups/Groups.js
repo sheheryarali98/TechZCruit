@@ -10,6 +10,7 @@ import Footer from '../../layout/Footer';
 import { Row, Form, Button } from 'react-bootstrap';
 import { toggleSideNav } from '../../../actions/auth';
 import windowSize from 'react-window-size';
+import Spinner from '../../layout/Spinner';
 
 const Groups = ({
   getAllGroups,
@@ -19,12 +20,17 @@ const Groups = ({
   toggleSideNav,
   windowWidth,
 }) => {
+  const [getAllGroupsCalled, setGetAllGroupsCalled] = useState(false);
+
   useEffect(() => {
-    getAllGroups();
+    if (!getAllGroupsCalled) {
+      getAllGroups();
+      setGetAllGroupsCalled(true);
+    }
 
     toggleSideNav(windowWidth >= 576);
     // eslint-disable-next-line
-  }, [getAllGroups, toggleSideNav]);
+  }, [groups, windowWidth]);
 
   const [formData, setFormData] = useState({
     description: '',
@@ -45,7 +51,9 @@ const Groups = ({
     }
   };
 
-  return (
+  return loading ? (
+    <Spinner />
+  ) : (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />

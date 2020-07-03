@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { getCurrentProfile, deleteProfile } from '../../actions/profile';
@@ -22,13 +22,19 @@ const Dashboard = ({
   toggleSideNav,
   windowWidth,
 }) => {
+  const [getCurrentProfileCalled, setGetCurrentProfileCalled] = useState(false);
+
   useEffect(() => {
-    getCurrentProfile();
+    if (!getCurrentProfileCalled) {
+      getCurrentProfile();
+      setGetCurrentProfileCalled(true);
+    }
+
     toggleSideNav(windowWidth >= 576);
     // eslint-disable-next-line
-  }, [getCurrentProfile, toggleSideNav]);
+  }, [profile, windowWidth]);
 
-  return loading && profile === null ? (
+  return loading ? (
     <Spinner />
   ) : (
     <Fragment>
@@ -46,7 +52,7 @@ const Dashboard = ({
           </div>
           <div className={styles.sub_heading}>Welcome {user && user.name}</div>
 
-          {profile !== null ? (
+          {!loading && profile !== null ? (
             <Fragment>
               <DashboardActions styles={styles} />
               <Experience styles={styles} experiences={profile.experiences} />

@@ -1,15 +1,17 @@
 import React, { Fragment } from 'react';
 import { Tab, Row, Col, Nav, Card } from 'react-bootstrap';
 import PropTypes from 'prop-types';
-import placeholder from '../../../img/placeholder.png';
 import { Link } from 'react-router-dom';
+import Spinner from '../../layout/Spinner';
 
 const StoreNavigationTabs = ({
   store,
   product: { loading, products },
   styles,
 }) => {
-  return (
+  return loading ? (
+    <Spinner />
+  ) : (
     <Fragment>
       <Tab.Container defaultActiveKey='products'>
         <Row>
@@ -36,7 +38,7 @@ const StoreNavigationTabs = ({
                     products.map((product) => (
                       <Col xs={12} md={4} lg={3} key={product._id}>
                         <Card className={styles.card}>
-                          <Card.Img src={placeholder} />
+                          <Card.Img src={product.image} />
                           <Card.Body>
                             <Card.Title
                               className={`${styles.card_title} text-truncate`}

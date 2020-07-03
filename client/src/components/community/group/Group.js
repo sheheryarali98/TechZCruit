@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import {
   getGroupById,
@@ -13,6 +13,7 @@ import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
 import { toggleSideNav } from '../../../actions/auth';
 import windowSize from 'react-window-size';
+import Spinner from '../../layout/Spinner';
 
 const Group = ({
   getGroupById,
@@ -24,14 +25,21 @@ const Group = ({
   toggleSideNav,
   windowWidth,
 }) => {
+  const [getGroupByIdCalled, setGetGroupByIdCalled] = useState(false);
+
   useEffect(() => {
-    getGroupById(match.params.id);
+    if (!getGroupByIdCalled) {
+      getGroupById(match.params.id);
+      setGetGroupByIdCalled(true);
+    }
 
     toggleSideNav(windowWidth >= 576);
     // eslint-disable-next-line
-  }, [getGroupById, match.params.id, toggleSideNav]);
+  }, [group, windowWidth]);
 
-  return (
+  return loading ? (
+    <Spinner />
+  ) : (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />

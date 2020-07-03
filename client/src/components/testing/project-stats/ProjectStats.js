@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { getProjectById } from '../../../actions/testing/project';
@@ -9,23 +9,31 @@ import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
 import { toggleSideNav } from '../../../actions/auth';
 import windowSize from 'react-window-size';
+import Spinner from '../../layout/Spinner';
 
 const ProjectStats = ({
-  project: { project },
+  project: { project, loading },
   getProjectById,
   match,
   toggleSideNav,
   windowWidth,
   auth: { displaySideNav },
 }) => {
+  const [getProjectByIdCalled, setGetProjectByIdCalled] = useState(false);
+
   useEffect(() => {
-    getProjectById(match.params.id);
+    if (!getProjectByIdCalled) {
+      getProjectById(match.params.id);
+      setGetProjectByIdCalled(true);
+    }
 
     toggleSideNav(windowWidth >= 576);
     // eslint-disable-next-line
-  }, [getProjectById, match.params.id, toggleSideNav]);
+  }, [project, windowWidth]);
 
-  return (
+  return loading ? (
+    <Spinner />
+  ) : (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />

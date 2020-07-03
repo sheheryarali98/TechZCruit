@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { getServiceById } from '../../../actions/freelance/service';
@@ -9,23 +9,31 @@ import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
 import { toggleSideNav } from '../../../actions/auth';
 import windowSize from 'react-window-size';
+import Spinner from '../../layout/Spinner';
 
 const ServiceStats = ({
-  service: { service },
+  service: { service, loading },
   getServiceById,
   match,
   toggleSideNav,
   windowWidth,
   auth: { displaySideNav },
 }) => {
+  const [getServiceByIdCalled, setGetServiceByIdCalled] = useState(false);
+
   useEffect(() => {
-    getServiceById(match.params.id);
+    if (!getServiceByIdCalled) {
+      getServiceById(match.params.id);
+      setGetServiceByIdCalled(true);
+    }
 
     toggleSideNav(windowWidth >= 576);
     // eslint-disable-next-line
-  }, [getServiceById, match.params.id, toggleSideNav]);
+  }, [service, windowWidth]);
 
-  return (
+  return loading ? (
+    <Spinner />
+  ) : (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />

@@ -112,11 +112,13 @@ export const changePassword = (password) => async (dispatch) => {
 
     const body = JSON.stringify({ password });
 
-    const res = await axios.put('/api/users/password', body, config);
+    await axios.put('/api/users/password', body, config);
 
     dispatch({ type: PASSWORD_UPDATED });
 
-    dispatch(setAlert(res.data.msg, 'success'));
+    dispatch(setAlert('Password updated', 'success'));
+
+    dispatch(loadUser());
   } catch (err) {
     const errors = err.response.data.errors;
 
@@ -137,11 +139,13 @@ export const changeName = (name) => async (dispatch) => {
 
     const body = JSON.stringify({ name });
 
-    const res = await axios.put('/api/users/name', body, config);
+    await axios.put('/api/users/name', body, config);
 
     dispatch({ type: NAME_UPDATED });
 
-    dispatch(setAlert(res.data.msg, 'success'));
+    dispatch(setAlert('Name updated', 'success'));
+
+    dispatch(loadUser());
   } catch (err) {
     const errors = err.response.data.errors;
 
@@ -152,35 +156,28 @@ export const changeName = (name) => async (dispatch) => {
 };
 
 // Upload profile picture
-export const uploadProfilePicture = (file) => async (dispatch) => {
+export const uploadProfilePicture = (formData) => async (dispatch) => {
   try {
     const config = {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        'Content-Type': 'application/json',
       },
     };
 
-    // const body = JSON.stringify({ file });
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const res = await axios.put(
-      '/api/users/profile-picture/upload',
-      formData,
-      config
-    );
+    await axios.put('/api/users/profile-picture/upload', formData, config);
 
     dispatch({
       type: PROFILE_PICTURE_UPLOADED,
-      payload: res.data.avatar,
     });
 
     dispatch(setAlert('Profile picture uploaded', 'success'));
+
+    dispatch(loadUser());
   } catch (err) {
-    if (err.response.status === 500) {
-      dispatch(setAlert('There was a problem with the server', 'danger'));
-    } else {
-      dispatch(setAlert(err.response.data.msg, 'danger'));
+    const errors = err.response.data.errors;
+
+    if (errors) {
+      errors.forEach((error) => dispatch(setAlert(error.msg, 'danger')));
     }
   }
 };
@@ -188,14 +185,15 @@ export const uploadProfilePicture = (file) => async (dispatch) => {
 // Remove profile picture
 export const removeProfilePicture = () => async (dispatch) => {
   try {
-    const res = await axios.put('/api/users/profile-picture/remove');
+    await axios.put('/api/users/profile-picture/remove');
 
     dispatch({
       type: PROFILE_PICTURE_REMOVED,
-      payload: res.data.avatar,
     });
 
     dispatch(setAlert('Profile picture removed', 'success'));
+
+    dispatch(loadUser());
   } catch (err) {
     dispatch(setAlert('Profile picture already removed', 'danger'));
   }

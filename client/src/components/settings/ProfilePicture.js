@@ -8,21 +8,24 @@ const ProfilePicture = ({
   auth: { user },
   uploadProfilePicture,
   removeProfilePicture,
-  styles
+  styles,
 }) => {
   const [formData, setFormData] = useState({
-    file: ''
+    image: '',
   });
 
-  const { file } = formData;
-
-  const onChange = e => {
-    setFormData({ ...formData, file: e.target.files[0] });
+  const onChange = (e) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setFormData({ ...formData, image: e.target.result });
+    };
+    reader.readAsDataURL(e.target.files[0]);
   };
 
-  const onSubmit = e => {
+  const onSubmit = (e) => {
     e.preventDefault();
-    uploadProfilePicture(file);
+    uploadProfilePicture(formData);
+    setFormData({ image: '' });
   };
 
   return (
@@ -38,9 +41,9 @@ const ProfilePicture = ({
               style={{ width: '200px', height: '200px' }}
             ></img>
           </div>
-          <Form onSubmit={e => onSubmit(e)}>
+          <Form onSubmit={(e) => onSubmit(e)}>
             <Form.Group>
-              <Form.Control type='file' onChange={e => onChange(e)} />
+              <Form.Control type='file' onChange={(e) => onChange(e)} />
             </Form.Group>
             <Button
               variant='primary'
@@ -68,10 +71,10 @@ ProfilePicture.propTypes = {
   auth: PropTypes.object.isRequired,
   uploadProfilePicture: PropTypes.func.isRequired,
   removeProfilePicture: PropTypes.func.isRequired,
-  styles: PropTypes.object.isRequired
+  styles: PropTypes.object.isRequired,
 };
 
 export default connect(null, {
   uploadProfilePicture,
-  removeProfilePicture
+  removeProfilePicture,
 })(ProfilePicture);

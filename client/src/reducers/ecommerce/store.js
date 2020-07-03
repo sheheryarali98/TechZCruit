@@ -5,17 +5,18 @@ import {
   STORE_CREATED,
   STORE_LOADED,
   STORE_UPDATED,
-  All_STORES_LOADED
+  All_STORES_LOADED,
+  SET_STORE_LOADING,
 } from '../../actions/types';
 
 const initialState = {
   store: null,
   loading: true,
   errors: null,
-  stores: []
+  stores: [],
 };
 
-export default function(state = initialState, action) {
+export default function (state = initialState, action) {
   const { type, payload } = action;
 
   switch (type) {
@@ -25,7 +26,7 @@ export default function(state = initialState, action) {
         ...state,
         loading: false,
         errors: null,
-        stores: payload
+        stores: payload,
       };
     case STORE_LOADED:
     case STORE_UPDATED:
@@ -33,27 +34,32 @@ export default function(state = initialState, action) {
         ...state,
         loading: false,
         errors: null,
-        store: payload
+        store: payload,
       };
     case STORE_CREATED:
       return {
         ...state,
         loading: false,
         errors: null,
-        stores: [...state.stores, payload]
+        stores: [...state.stores, payload],
       };
     case STORE_REMOVED:
       return {
         ...state,
         loading: false,
         errors: null,
-        stores: [...state.stores.filter(store => store._id !== payload)]
+        stores: [...state.stores.filter((store) => store._id !== payload)],
       };
     case STORE_ERROR:
       return {
         ...state,
         loading: false,
-        errors: payload
+        errors: payload,
+      };
+    case SET_STORE_LOADING:
+      return {
+        ...state,
+        loading: true,
       };
     default:
       return state;

@@ -16,17 +16,18 @@ import {
   PROJECT_TESTCASE_PASSED,
   PROJECT_TESTCASE_FAILED,
   COMMENT_ADDED_PROJECT,
-  COMMENT_REMOVED_PROJECT
+  COMMENT_REMOVED_PROJECT,
+  SET_PROJECT_LOADING,
 } from '../../actions/types';
 
 const initialState = {
   project: null,
   loading: true,
   errors: null,
-  projects: []
+  projects: [],
 };
 
-export default function(state = initialState, action) {
+export default function (state = initialState, action) {
   const { type, payload } = action;
 
   switch (type) {
@@ -37,14 +38,14 @@ export default function(state = initialState, action) {
         ...state,
         projects: payload,
         loading: false,
-        errors: null
+        errors: null,
       };
     case PROJECT_CREATED:
       return {
         ...state,
         loading: false,
         errors: null,
-        projects: [...state.projects, payload]
+        projects: [...state.projects, payload],
       };
     case PROJECT_LOADED:
     case PROJECT_UPDATED:
@@ -52,7 +53,7 @@ export default function(state = initialState, action) {
         ...state,
         project: payload,
         loading: false,
-        errors: null
+        errors: null,
       };
     case PROJECT_OFFER_SENT:
     case PROJECT_OFFER_DELETED:
@@ -60,7 +61,7 @@ export default function(state = initialState, action) {
         ...state,
         loading: false,
         errors: null,
-        project: { ...state.project, offers: payload.offers }
+        project: { ...state.project, offers: payload.offers },
       };
     case PROJECT_DELETED:
     case PROJECT_TESTING_FINISHED:
@@ -68,7 +69,7 @@ export default function(state = initialState, action) {
         ...state,
         loading: false,
         errors: null,
-        projects: [...state.projects.filter(item => item._id !== payload)]
+        projects: [...state.projects.filter((item) => item._id !== payload)],
       };
     case PROJECT_TESTCASE_CREATED:
     case PROJECT_TESTCASE_DELETED:
@@ -76,14 +77,14 @@ export default function(state = initialState, action) {
         ...state,
         loading: false,
         errors: null,
-        project: { ...state.project, testCases: payload.testCases }
+        project: { ...state.project, testCases: payload.testCases },
       };
     case PROJECT_TESTER_ADDED:
       return {
         ...state,
         loading: false,
         errors: null,
-        project: { ...state.project, testers: payload.testers }
+        project: { ...state.project, testers: payload.testers },
       };
     case PROJECT_TESTCASE_PASSED:
     case PROJECT_TESTCASE_FAILED:
@@ -91,7 +92,7 @@ export default function(state = initialState, action) {
         ...state,
         loading: false,
         errors: null,
-        project: { ...state.project, testCases: payload.testCases }
+        project: { ...state.project, testCases: payload.testCases },
       };
     case COMMENT_ADDED_PROJECT:
     case COMMENT_REMOVED_PROJECT:
@@ -99,13 +100,18 @@ export default function(state = initialState, action) {
         ...state,
         loading: false,
         errors: null,
-        project: { ...state.project, comments: payload.comments }
+        project: { ...state.project, comments: payload.comments },
       };
     case PROJECT_ERROR:
       return {
         ...state,
         loading: false,
-        errors: payload
+        errors: payload,
+      };
+    case SET_PROJECT_LOADING:
+      return {
+        ...state,
+        loading: true,
       };
     default:
       return state;

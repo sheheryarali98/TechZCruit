@@ -39,7 +39,7 @@ router.get('/search/:description', auth, async (req, res) => {
 
   try {
     const products = await Product.find({
-      title: new RegExp(description, 'i')
+      title: new RegExp(description, 'i'),
     });
 
     res.send(products);
@@ -72,14 +72,10 @@ router.post(
   '/:id',
   [
     auth,
-    check('title', 'Title is required')
-      .not()
-      .isEmpty(),
-    check('description', 'Description is required')
-      .not()
-      .isEmpty(),
+    check('title', 'Title is required').not().isEmpty(),
+    check('description', 'Description is required').not().isEmpty(),
     check('category', 'Category is required').isInt(),
-    check('price', 'Price is required').isInt()
+    check('price', 'Price is required').isInt(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -87,7 +83,7 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { title, description, category, price } = req.body;
+    const { title, description, category, price, image } = req.body;
 
     const product = new Product({
       user: req.user.id,
@@ -95,7 +91,8 @@ router.post(
       title,
       description,
       category,
-      price
+      price,
+      image,
     });
 
     try {
@@ -114,11 +111,11 @@ router.post(
 router.put('/like/:id', auth, async (req, res) => {
   try {
     const product = await Product.findOne({
-      _id: req.params.id
+      _id: req.params.id,
     });
 
     //Check if the product already has a favourite by login user
-    const index = product.likes.map(item => item.user).indexOf(req.user.id);
+    const index = product.likes.map((item) => item.user).indexOf(req.user.id);
 
     if (index !== -1) {
       return res.status(400).json({ msg: 'Already liked' });
@@ -142,7 +139,7 @@ router.put('/unlike/:id', auth, async (req, res) => {
     const product = await Product.findOne({ _id: req.params.id });
 
     const removeIndex = product.likes
-      .map(item => item.user)
+      .map((item) => item.user)
       .indexOf(req.user.id);
 
     if (removeIndex === -1) {
@@ -167,9 +164,7 @@ router.put(
   [
     auth,
     check('rating', 'Rating is required').isInt(),
-    check('description', 'Description is required')
-      .not()
-      .isEmpty()
+    check('description', 'Description is required').not().isEmpty(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -185,7 +180,7 @@ router.put(
       product.reviews.unshift({
         user: req.user.id,
         description,
-        rating
+        rating,
       });
 
       product.populate('reviews.user', ['name', 'avatar'], (err, res) => {
@@ -207,12 +202,7 @@ router.put(
 // @access  Private
 router.put(
   '/purchase/:id',
-  [
-    auth,
-    check('amount', 'Amount is required')
-      .not()
-      .isEmpty()
-  ],
+  [auth, check('amount', 'Amount is required').not().isEmpty()],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -230,12 +220,12 @@ router.put(
 
       const paymentIntent = await stripe.paymentIntents.create({
         amount: amount * 100,
-        currency: 'usd'
+        currency: 'usd',
       });
 
       res.json({
         product: product,
-        clientSecret: paymentIntent.client_secret
+        clientSecret: paymentIntent.client_secret,
       });
     } catch (err) {
       console.log(err);
@@ -251,14 +241,10 @@ router.put(
   '/:id',
   [
     auth,
-    check('title', 'Title is required')
-      .not()
-      .isEmpty(),
-    check('description', 'Description is required')
-      .not()
-      .isEmpty(),
+    check('title', 'Title is required').not().isEmpty(),
+    check('description', 'Description is required').not().isEmpty(),
     check('category', 'Category is required').isInt(),
-    check('price', 'Price is required').isInt()
+    check('price', 'Price is required').isInt(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -277,7 +263,7 @@ router.put(
         return res.status(401).json({ msg: 'Not authorized' });
       }
 
-      const { title, description, category, price } = req.body;
+      const { title, description, category, price, image } = req.body;
 
       product = await Product.findOneAndUpdate(
         { _id: req.params.id },
@@ -286,8 +272,9 @@ router.put(
             title,
             description,
             category,
-            price
-          }
+            price,
+            image,
+          },
         },
         { new: true }
       );
@@ -308,7 +295,7 @@ router.delete('/review/:id/:review_id', auth, async (req, res) => {
     const product = await Product.findById({ _id: req.params.id });
 
     const removeIndex = product.reviews
-      .map(item => item.id)
+      .map((item) => item.id)
       .indexOf(req.params.review_id);
 
     if (removeIndex === -1) {

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { supportCampaign } from '../../../actions/crowdfunding/campaign';
 import { Form, Modal, Button } from 'react-bootstrap';
 import { CardElement, injectStripe } from 'react-stripe-elements';
+import { setAlert } from '../../../actions/alert';
 
 const SupportForm = ({
   campaignId,
@@ -11,10 +12,10 @@ const SupportForm = ({
   toggleModal,
   stripe,
   elements,
-  auth
+  setAlert,
 }) => {
   const [formData, setFormData] = useState({
-    amount: ''
+    amount: '',
   });
 
   const { amount } = formData;
@@ -26,20 +27,20 @@ const SupportForm = ({
       fontSmoothing: 'antialiased',
       fontSize: '16px',
       '::placeholder': {
-        color: '#aab7c4'
-      }
+        color: '#aab7c4',
+      },
     },
     invalid: {
       color: '#fa755a',
-      iconColor: '#fa755a'
-    }
+      iconColor: '#fa755a',
+    },
   };
 
-  const onChange = e => {
+  const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const onSubmit = async e => {
+  const onSubmit = async (e) => {
     e.preventDefault();
 
     const cardElement = elements.getElement('card');
@@ -51,9 +52,11 @@ const SupportForm = ({
 
       await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
-          card: elements.getElement('card')
-        }
+          card: cardElement,
+        },
       });
+
+      setAlert('Campaign supported', 'success');
 
       toggleModal();
     }
@@ -61,7 +64,7 @@ const SupportForm = ({
 
   return (
     <Fragment>
-      <Form onSubmit={e => onSubmit(e)}>
+      <Form onSubmit={(e) => onSubmit(e)}>
         <Modal.Body>
           <Form.Group>
             <Form.Label>Please enter card details below</Form.Label>
@@ -73,7 +76,7 @@ const SupportForm = ({
               type='number'
               name='amount'
               value={amount}
-              onChange={e => onChange(e)}
+              onChange={(e) => onChange(e)}
               placeholder='Support amount'
             />
           </Form.Group>
@@ -97,9 +100,10 @@ SupportForm.propTypes = {
   toggleModal: PropTypes.func.isRequired,
   stripe: PropTypes.object.isRequired,
   elements: PropTypes.object.isRequired,
-  auth: PropTypes.object.isRequired
+  setAlert: PropTypes.func.isRequired,
 };
 
 export default connect(null, {
-  supportCampaign
+  supportCampaign,
+  setAlert,
 })(injectStripe(SupportForm));

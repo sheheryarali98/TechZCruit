@@ -12,7 +12,6 @@ const PaymentForm = ({
   stripe,
   elements,
   amount,
-  auth
 }) => {
   const cardElementStyle = {
     base: {
@@ -21,16 +20,16 @@ const PaymentForm = ({
       fontSmoothing: 'antialiased',
       fontSize: '16px',
       '::placeholder': {
-        color: '#aab7c4'
-      }
+        color: '#aab7c4',
+      },
     },
     invalid: {
       color: '#fa755a',
-      iconColor: '#fa755a'
-    }
+      iconColor: '#fa755a',
+    },
   };
 
-  const onSubmit = async e => {
+  const onSubmit = async (e) => {
     e.preventDefault();
 
     const cardElement = elements.getElement('card');
@@ -40,19 +39,19 @@ const PaymentForm = ({
     } else {
       const clientSecret = await purchaseProduct(productId, amount);
 
-      toggleModal();
-
       await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
-          card: elements.getElement('card')
-        }
+          card: elements.getElement('card'),
+        },
       });
+
+      toggleModal();
     }
   };
 
   return (
     <Fragment>
-      <Form onSubmit={e => onSubmit(e)}>
+      <Form onSubmit={(e) => onSubmit(e)}>
         <Modal.Body>
           <Form.Group>
             <Form.Label>Please enter card details below</Form.Label>
@@ -79,9 +78,9 @@ PaymentForm.propTypes = {
   stripe: PropTypes.object.isRequired,
   elements: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired,
-  amount: PropTypes.number.isRequired
+  amount: PropTypes.number.isRequired,
 };
 
 export default connect(null, {
-  purchaseProduct
+  purchaseProduct,
 })(injectStripe(PaymentForm));

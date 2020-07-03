@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { getAllOngoingProjectsForCurrentUser } from '../../../actions/testing/project';
@@ -9,6 +9,7 @@ import Alert from '../../layout/Alert';
 import Footer from '../../layout/Footer';
 import { toggleSideNav } from '../../../actions/auth';
 import windowSize from 'react-window-size';
+import Spinner from '../../layout/Spinner';
 
 const OngoingProjects = ({
   project: { loading, projects },
@@ -17,14 +18,24 @@ const OngoingProjects = ({
   windowWidth,
   auth: { displaySideNav },
 }) => {
+  const [
+    getAllOngoingProjectsForCurrentUserCalled,
+    setGetAllOngoingProjectsForCurrentUserCalled,
+  ] = useState(false);
+
   useEffect(() => {
-    getAllOngoingProjectsForCurrentUser();
+    if (!getAllOngoingProjectsForCurrentUserCalled) {
+      getAllOngoingProjectsForCurrentUser();
+      setGetAllOngoingProjectsForCurrentUserCalled(true);
+    }
 
     toggleSideNav(windowWidth >= 576);
     // eslint-disable-next-line
-  }, [getAllOngoingProjectsForCurrentUser, toggleSideNav]);
+  }, [projects, windowWidth]);
 
-  return (
+  return loading ? (
+    <Spinner />
+  ) : (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />

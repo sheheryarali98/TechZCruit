@@ -10,6 +10,7 @@ import Footer from '../layout/Footer';
 import styles from '../../css/profile-forms/style.module.css';
 import { toggleSideNav } from '../../actions/auth';
 import windowSize from 'react-window-size';
+import Spinner from '../layout/Spinner';
 
 const EditProfile = ({
   createProfile,
@@ -50,8 +51,13 @@ const EditProfile = ({
     youtube,
   } = formData;
 
+  const [getCurrentProfileCalled, setGetCurrentProfileCalled] = useState(false);
+
   useEffect(() => {
-    getCurrentProfile();
+    if (!getCurrentProfileCalled) {
+      getCurrentProfile();
+      setGetCurrentProfileCalled(true);
+    }
 
     toggleSideNav(windowWidth >= 576);
 
@@ -77,7 +83,7 @@ const EditProfile = ({
     });
 
     // eslint-disable-next-line
-  }, [loading, getCurrentProfile.toggleSideNav]);
+  }, [profile, windowWidth]);
 
   const [displaySocialLinks, setDisplaySocialLinks] = useState(false);
 
@@ -94,7 +100,9 @@ const EditProfile = ({
     createProfile(formData, history, true);
   };
 
-  return (
+  return loading ? (
+    <Spinner />
+  ) : (
     <Fragment>
       <section className={styles.section}>
         <SideNav styles={styles} />
